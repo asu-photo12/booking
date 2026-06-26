@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>田中スタジオ — 撮影予約</title>
+<style>
+  /* ===== リセット & ベース ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', sans-serif; background: #f5f4f0; color: #1a1a1a; font-size: 15px; line-height: 1.6; }
+
+  /* ===== ヘッダー ===== */
+  .site-header { background: #534AB7; color: #fff; padding: 2rem 1.5rem; text-align: center; }
+  .site-header h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .site-header p  { font-size: 14px; opacity: .8; }
+
+  /* ===== コンテナ ===== */
+  .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
+
+  /* ===== カード ===== */
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid #e0deda; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .card h2 { font-size: 16px; font-weight: 500; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .card h2::before { content: ''; display: block; width: 4px; height: 18px; background: #534AB7; border-radius: 2px; }
+
+  /* ===== プラン選択 ===== */
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .plan { border: 0.5px solid #ddd; border-radius: 10px; padding: 12px; cursor: pointer; transition: border-color .15s, background .15s; }
+  .plan:hover { border-color: #534AB7; background: #f8f7fe; }
+  .plan.selected { border: 2px solid #534AB7; background: #EEEDFE; }
+  .plan input[type="radio"] { display: none; }
+  .plan-name  { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .plan-price { font-size: 18px; font-weight: 500; color: #534AB7; }
+  .plan-price span { font-size: 12px; color: #888; font-weight: 400; }
+  .plan-desc  { font-size: 11px; color: #888; margin-top: 4px; }
+  .plan-features { font-size: 11px; color: #666; margin-top: 6px; line-height: 1.8; }
+
+  /* ===== カレンダー ===== */
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cal-nav button { background: #f5f4f0; border: 0.5px solid #ddd; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 14px; }
+  .cal-nav span { font-size: 14px; font-weight: 500; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-day { text-align: center; font-size: 11px; color: #888; padding: 4px 0; font-weight: 500; }
+  .cal-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 0.5px solid transparent; transition: all .1s; }
+  .cal-cell.empty, .cal-cell.past { cursor: default; color: #ccc; }
+  .cal-cell.available { background: #EAF3DE; color: #27500A; }
+  .cal-cell.available:hover { border-color: #639922; }
+  .cal-cell.booked { background: #f5f4f0; color: #ccc; cursor: not-allowed; }
+  .cal-cell.selected { background: #534AB7; color: #fff; font-weight: 500; }
+  .cal-legend { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #666; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ===== フォーム ===== */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 12px; font-weight: 500; color: #555; }
+  label .required { color: #E24B4A; margin-left: 2px; }
+  input, select, textarea {
+    width: 100%; padding: 9px 12px; border-radius: 8px;
+    border: 0.5px solid #ddd; font-size: 14px; font-family: inherit;
+    background: #fff; color: #1a1a1a; transition: border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #534AB7; box-shadow: 0 0 0 3px rgba(83,74,183,.1); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* ===== 確認ボックス ===== */
+  .confirm-box { background: #f5f4f0; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 13px; line-height: 1.9; }
+  .confirm-box h3 { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+  .confirm-row { display: flex; gap: 8px; }
+  .confirm-label { color: #888; min-width: 80px; flex-shrink: 0; }
+
+  /* ===== 送信ボタン ===== */
+  .submit-btn {
+    width: 100%; padding: 14px; background: #534AB7; color: #fff;
+    border: none; border-radius: 10px; font-size: 16px; font-weight: 500;
+    cursor: pointer; transition: background .15s, transform .1s;
+    font-family: inherit;
+  }
+  .submit-btn:hover { background: #3C3489; }
+  .submit-btn:active { transform: scale(0.99); }
+  .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+  /* ===== ステップナビ ===== */
+  .steps { display: flex; align-items: center; gap: 0; margin-bottom: 1.5rem; }
+  .step { flex: 1; text-align: center; position: relative; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: #ddd; color: #888; font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+  .step.active .step-num { background: #534AB7; color: #fff; }
+  .step.done .step-num { background: #97C459; color: #fff; }
+  .step-label { font-size: 11px; color: #888; margin-top: 4px; }
+  .step.active .step-label { color: #534AB7; font-weight: 500; }
+  .step::before { content: ''; position: absolute; top: 14px; left: -50%; right: 50%; height: 1px; background: #ddd; }
+  .step:first-child::before { display: none; }
+  .step.done::before, .step.active::before { background: #97C459; }
+
+  /* ===== アラート ===== */
+  .alert { border-radius: 10px; padding: 12px 14px; font-size: 13px; margin-bottom: 1rem; }
+  .alert-success { background: #EAF3DE; color: #27500A; border: 0.5px solid #97C459; }
+  .alert-error   { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
+  .alert-loading { background: #EEEDFE; color: #3C3489; border: 0.5px solid #AFA9EC; }
+  .hidden { display: none; }
+
+  @media (max-width: 520px) {
+    .plans { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1 id="studio-name">田中スタジオ</h1>
+  <p id="studio-tagline">大切な瞬間を、永遠の思い出に。</p>
+</header>
+
+<div class="container">
+
+  <!-- ステップナビ -->
+  <div class="steps" id="steps">
+    <div class="step active" id="step1"><div class="step-num">1</div><div class="step-label">プラン選択</div></div>
+    <div class="step" id="step2"><div class="step-num">2</div><div class="step-label">日程選択</div></div>
+    <div class="step" id="step3"><div class="step-num">3</div><div class="step-label">情報入力</div></div>
+    <div class="step" id="step4"><div class="step-num">4</div><div class="step-label">確認・送信</div></div>
+  </div>
+
+  <!-- アラート -->
+  <div id="alert-box" class="alert hidden"></div>
+
+  <!-- ① プラン選択 -->
+  <div class="card" id="section-plan">
+    <h2>料金プランを選ぶ</h2>
+    <div class="plans">
+      <label class="plan selected" id="plan-light" onclick="selectPlan('ライトプラン','30000','light')">
+        <input type="radio" name="plan" value="ライトプラン" checked>
+        <div class="plan-name">ライト</div>
+        <div class="plan-price">¥30,000<span> / 回</span></div>
+        <div class="plan-desc">気軽に撮影したい方向け</div>
+        <div class="plan-features">撮影 2時間<br>データ納品 30枚<br>基本レタッチ</div>
+      </label>
+      <label class="plan" id="plan-standard" onclick="selectPlan('スタンダードプラン','55000','standard')">
+        <input type="radio" name="plan" value="スタンダードプラン">
+        <div class="plan-name">スタンダード ★人気</div>
+        <div class="plan-price">¥55,000<span> / 回</span></div>
+        <div class="plan-desc">定番の撮影に最適</div>
+        <div class="plan-features">撮影 4時間<br>データ納品 80枚<br>フルレタッチ</div>
+      </label>
+      <label class="plan" id="plan-premium" onclick="selectPlan('プレミアムプラン','90000','premium')">
+        <input type="radio" name="plan" value="プレミアムプラン">
+        <div class="plan-name">プレミアム</div>
+        <div class="plan-price">¥90,000<span> / 回</span></div>
+        <div class="plan-desc">特別な日を記録</div>
+        <div class="plan-features">撮影 終日<br>データ無制限<br>フォトブック付き</div>
+      </label>
+    </div>
+  </div>
+
+  <!-- ② 日程選択 -->
+  <div class="card" id="section-calendar">
+    <h2>撮影日を選ぶ</h2>
+    <div class="cal-nav">
+      <button onclick="changeMonth(-1)">‹</button>
+      <span id="cal-month-label"></span>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#97C459"></div>空き</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ddd"></div>予約済み</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#534AB7"></div>選択中</div>
+    </div>
+    <p id="selected-date-display" style="margin-top:10px;font-size:13px;color:#534AB7;font-weight:500;min-height:20px"></p>
+  </div>
+
+  <!-- ③ お客様情報 -->
+  <div class="card" id="section-form">
+    <h2>お客様情報を入力</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>お名前<span class="required">*</span></label>
+        <input type="text" id="f-name" placeholder="山田 花子">
+      </div>
+      <div class="form-group">
+        <label>メールアドレス<span class="required">*</span></label>
+        <input type="email" id="f-email" placeholder="hanako@example.com">
+      </div>
+      <div class="form-group">
+        <label>電話番号</label>
+        <input type="tel" id="f-phone" placeholder="090-0000-0000">
+      </div>
+      <div class="form-group">
+        <label>撮影場所のご希望</label>
+        <input type="text" id="f-location" placeholder="渋谷スタジオ / 屋外など">
+      </div>
+      <div class="form-group full">
+        <label>ご要望・備考</label>
+        <textarea id="f-note" placeholder="衣装持参、ペット同伴など特記事項があればご記入ください"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 確認 -->
+  <div class="card" id="section-confirm">
+    <h2>予約内容の確認</h2>
+    <div class="confirm-box">
+      <div class="confirm-row"><span class="confirm-label">プラン</span><span id="conf-plan">—</span></div>
+      <div class="confirm-row"><span class="confirm-label">撮影日</span><span id="conf-date">—</span></div>
+      <div class="confirm-row"><span class="confirm-label">お名前</span><span id="conf-name">—</span></div>
+      <div class="confirm-row"><span class="confirm-label">メール</span><span id="conf-email">—</span></div>
+      <div class="confirm-row"><span class="confirm-label">電話番号</span><span id="conf-phone">—</span></div>
+      <div class="confirm-row"><span class="confirm-label">場所</span><span id="conf-location">—</span></div>
+      <div class="confirm-row"><span class="confirm-label">料金</span><span id="conf-price" style="font-weight:500;color:#534AB7">—</span></div>
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">この内容で予約を申し込む</button>
+    <p style="font-size:11px;color:#888;margin-top:8px;text-align:center">送信後、ご登録のメールアドレスに確認メールをお送りします。</p>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ============================================================
+//  設定 — Apps ScriptのウェブアプリURLをここに貼り付ける
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
+// ============================================================
+//  状態管理
+// ============================================================
+let selectedPlanName  = 'ライトプラン';
+let selectedPlanPrice = '30000';
+let selectedDate      = '';
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+// 空き日程（本番ではApps ScriptのGET APIから取得）
+let availability = {};
+fetchAvailability();
+
+async function fetchAvailability() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=availability');
+    const json = await res.json();
+    if (json.status === 'ok') {
+      availability = json.availability;
+      buildCalendar();
+    }
+  } catch (e) {
+    // 取得失敗時はサンプルデータで表示
+    const y = calYear, m = String(calMonth + 1).padStart(2, '0');
+    [7, 8, 9, 14, 15, 21, 22, 28].forEach(d => {
+      availability[`${y}-${m}-${String(d).padStart(2, '0')}`] = 'available';
+    });
+    buildCalendar();
+  }
+}
+
+// ============================================================
+//  プラン選択
+// ============================================================
+function selectPlan(name, price, key) {
+  selectedPlanName  = name;
+  selectedPlanPrice = price;
+  document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'));
+  document.getElementById('plan-' + key).classList.add('selected');
+  updateConfirm();
+}
+
+// ============================================================
+//  カレンダー
+// ============================================================
+const DAYS_JP = ['日', '月', '火', '水', '木', '金', '土'];
+const MONTHS_JP = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+function buildCalendar() {
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  DAYS_JP.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-day';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const first = new Date(calYear, calMonth, 1).getDay();
+  const total = new Date(calYear, calMonth + 1, 0).getDate();
+  const today = new Date();
+  document.getElementById('cal-month-label').textContent = `${calYear}年 ${MONTHS_JP[calMonth]}`;
+
+  for (let i = 0; i < first; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-cell empty';
+    grid.appendChild(el);
+  }
+
+  for (let d = 1; d <= total; d++) {
+    const key = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const el = document.createElement('div');
+    el.textContent = d;
+    const isPast = new Date(calYear, calMonth, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    if (isPast) {
+      el.className = 'cal-cell past';
+    } else if (key === selectedDate) {
+      el.className = 'cal-cell selected';
+    } else if (availability[key] === 'available') {
+      el.className = 'cal-cell available';
+      el.onclick = () => { selectedDate = key; buildCalendar(); updateConfirm(); };
+    } else if (availability[key] === 'booked') {
+      el.className = 'cal-cell booked';
+    } else {
+      el.className = 'cal-cell past';
+    }
+    grid.appendChild(el);
+  }
+
+  document.getElementById('selected-date-display').textContent =
+    selectedDate ? `選択中: ${selectedDate}` : '';
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  buildCalendar();
+}
+
+// ============================================================
+//  確認欄の更新
+// ============================================================
+function updateConfirm() {
+  const name     = document.getElementById('f-name').value;
+  const email    = document.getElementById('f-email').value;
+  const phone    = document.getElementById('f-phone').value;
+  const location = document.getElementById('f-location').value;
+  document.getElementById('conf-plan').textContent     = selectedPlanName;
+  document.getElementById('conf-date').textContent     = selectedDate || '未選択';
+  document.getElementById('conf-name').textContent     = name || '未入力';
+  document.getElementById('conf-email').textContent    = email || '未入力';
+  document.getElementById('conf-phone').textContent    = phone || '未入力';
+  document.getElementById('conf-location').textContent = location || '未定';
+  document.getElementById('conf-price').textContent    = '¥' + Number(selectedPlanPrice).toLocaleString();
+}
+
+// 入力変更時にも確認欄を更新
+['f-name', 'f-email', 'f-phone', 'f-location'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateConfirm);
+});
+
+// ============================================================
+//  送信処理
+// ============================================================
+async function submitBooking() {
+  // バリデーション
+  const name  = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  if (!name)          { showAlert('error', 'お名前を入力してください。'); return; }
+  if (!email)         { showAlert('error', 'メールアドレスを入力してください。'); return; }
+  if (!selectedDate)  { showAlert('error', '撮影日を選択してください。'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showAlert('error', 'メールアドレスの形式が正しくありません。');
+    return;
+  }
+
+  const payload = {
+    name,
+    email,
+    phone:    document.getElementById('f-phone').value.trim(),
+    date:     selectedDate,
+    plan:     selectedPlanName,
+    location: document.getElementById('f-location').value.trim(),
+    note:     document.getElementById('f-note').value.trim()
+  };
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+  showAlert('loading', '予約を送信しています...');
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+
+    if (json.status === 'ok') {
+      showAlert('success',
+        `予約を受け付けました（ID: ${json.bookingId}）。` +
+        `確認メールを ${email} へ送りました。`
+      );
+      btn.textContent = '送信済み';
+      // 空き日程を更新（選択した日をbookedに）
+      availability[selectedDate] = 'booked';
+      selectedDate = '';
+      buildCalendar();
+    } else {
+      throw new Error(json.message || '送信エラー');
+    }
+  } catch (err) {
+    showAlert('error', `送信に失敗しました: ${err.message}`);
+    btn.disabled = false;
+    btn.textContent = 'この内容で予約を申し込む';
+  }
+}
+
+function showAlert(type, msg) {
+  const el = document.getElementById('alert-box');
+  el.className = `alert alert-${type}`;
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ============================================================
+//  初期化
+// ============================================================
+buildCalendar();
+updateConfirm();
+</script>
+</body>
+</html>
