@@ -9,7 +9,6 @@
 body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f5f4f0;color:#1a1a1a;font-size:14px}
 .header{background:#534AB7;color:#fff;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:18px;font-weight:500}
-.header span{font-size:12px;opacity:.8}
 .container{max-width:900px;margin:0 auto;padding:1.5rem 1rem}
 .tabs{display:flex;gap:4px;margin-bottom:1.5rem;background:#fff;border-radius:10px;padding:4px;border:0.5px solid #e0deda}
 .tab-btn{flex:1;padding:8px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#888;font-family:inherit;transition:all .15s}
@@ -26,27 +25,23 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
 .btn-d{background:#FCEBEB;color:#A32D2D;border-color:#F09595}
 .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
 .fg label{font-size:12px;font-weight:500;color:#555}
-.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;font-family:inherit;background:#fff;color:#1a1a1a}
-.fg input:focus,.fg select:focus{outline:none;border-color:#534AB7}
+.fg input,.fg select{width:100%;padding:8px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;font-family:inherit;background:#fff;color:#1a1a1a}
+.fg input:focus{outline:none;border-color:#534AB7}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-/* カレンダー */
-.cal-wrap{margin-bottom:1rem}
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .cal-nav button{background:#f5f4f0;border:0.5px solid #ddd;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px}
 .cal-nav span{font-size:14px;font-weight:500}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .cal-day{text-align:center;font-size:11px;color:#888;padding:3px 0;font-weight:500}
-.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:6px;cursor:pointer;border:0.5px solid transparent;transition:all .1s;position:relative}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:6px;cursor:pointer;border:0.5px solid transparent;transition:all .1s}
 .cal-cell.empty,.cal-cell.past{cursor:default;color:#ccc}
 .cal-cell.available{background:#EAF3DE;color:#27500A}
 .cal-cell.booked{background:#FAEEDA;color:#633806}
 .cal-cell.selected{background:#534AB7;color:#fff;font-weight:500}
-.cal-cell:hover:not(.empty):not(.past){opacity:.8}
 .legend{display:flex;gap:12px;margin:8px 0;flex-wrap:wrap}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#666}
 .legend-dot{width:9px;height:9px;border-radius:50%}
 .cal-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-/* 予約一覧 */
 .brow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:0.5px solid #e0deda;border-radius:10px;margin-bottom:6px}
 .av{width:34px;height:34px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#26215C;flex-shrink:0}
 .brow-info{flex:1;min-width:0}
@@ -55,7 +50,6 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
 .badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:500}
 .b-ok{background:#EAF3DE;color:#27500A}
 .b-pend{background:#FAEEDA;color:#633806}
-/* プラン */
 .plan-card{border:0.5px solid #e0deda;border-radius:10px;padding:1rem;margin-bottom:10px}
 .plan-card h3{font-size:14px;font-weight:500;margin-bottom:10px;color:#534AB7}
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
@@ -63,16 +57,19 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
 .stat-l{font-size:11px;color:#888}
 .stat-v{font-size:20px;font-weight:500;margin-top:2px}
 .alert{border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:10px;display:none}
-.alert-success{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
-.alert-error{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595}
+.alert-success{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459;display:block}
+.alert-error{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595;display:block}
+.alert-loading{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC;display:block}
+.saving{opacity:.6;pointer-events:none}
 </style>
 </head>
 <body>
 <div class="header">
   <h1>asuphoto 管理画面</h1>
-  <span>管理者専用</span>
+  <span id="sync-status" style="font-size:12px;opacity:.8"></span>
 </div>
 <div class="container">
+  <div id="global-alert" class="alert" style="display:none"></div>
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('dashboard',this)">ダッシュボード</button>
     <button class="tab-btn" onclick="showTab('calendar',this)">空き日程管理</button>
@@ -97,29 +94,27 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
   <div id="tab-calendar" class="tab-content">
     <div class="card">
       <h2>空き日程を設定する</h2>
-      <div class="cal-wrap">
-        <div class="cal-nav">
-          <button onclick="calChange(-1)">‹</button>
-          <span id="cal-label"></span>
-          <button onclick="calChange(1)">›</button>
-        </div>
-        <div class="cal-grid" id="cal-grid"></div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#97C459"></div>空き</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#EF9F27"></div>予約済み</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#534AB7"></div>選択中</div>
-        </div>
-        <div class="cal-actions">
-          <button class="btn btn-p" onclick="setStatus('available')">✓ 空きに設定</button>
-          <button class="btn" onclick="setStatus('booked')">× 予約済みに設定</button>
-          <button class="btn" onclick="setStatus('none')">　 設定を削除</button>
-          <button class="btn" style="margin-left:auto" onclick="clearSelected()">選択解除</button>
-        </div>
+      <div id="cal-alert" class="alert" style="display:none"></div>
+      <div class="cal-nav">
+        <button onclick="calChange(-1)">‹</button>
+        <span id="cal-label"></span>
+        <button onclick="calChange(1)">›</button>
       </div>
-      <div id="cal-alert" class="alert"></div>
-      <div style="margin-top:1rem">
-        <p style="font-size:13px;font-weight:500;margin-bottom:8px">現在の設定一覧</p>
-        <div id="avail-list"></div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#97C459"></div>空き</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#EF9F27"></div>予約済み</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#534AB7"></div>選択中</div>
+      </div>
+      <div class="cal-actions">
+        <button class="btn btn-p" onclick="setStatus('available')">空きに設定</button>
+        <button class="btn" onclick="setStatus('booked')">予約済みに設定</button>
+        <button class="btn" onclick="setStatus('none')">設定を削除</button>
+        <button class="btn" style="margin-left:auto" onclick="clearSel()">選択解除</button>
+      </div>
+      <div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid #e0deda">
+        <button class="btn btn-p" onclick="saveAvailability()" id="save-avail-btn">スプレッドシートに保存する</button>
+        <p style="font-size:11px;color:#888;margin-top:6px">設定後に必ずこのボタンを押してください。お客様ページと同期されます。</p>
       </div>
     </div>
   </div>
@@ -128,6 +123,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
   <div id="tab-bookings" class="tab-content">
     <div class="card">
       <h2>予約一覧</h2>
+      <div id="book-alert" class="alert" style="display:none"></div>
       <div style="display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap">
         <button class="btn" style="border-color:#534AB7;color:#534AB7" onclick="filterB('all',this)">すべて</button>
         <button class="btn" onclick="filterB('confirmed',this)">確定</button>
@@ -141,9 +137,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
   <div id="tab-plans" class="tab-content">
     <div class="card">
       <h2>料金プランを編集する</h2>
-      <p style="font-size:12px;color:#888;margin-bottom:1rem">※ 変更後は「保存」を押してください。お客様ページに即時反映されます。</p>
-      <div id="plan-alert" class="alert"></div>
-
+      <div id="plan-alert" class="alert" style="display:none"></div>
       <div class="plan-card">
         <h3>ライトプラン</h3>
         <div class="grid2">
@@ -153,7 +147,6 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
           <div class="fg"><label>レタッチ</label><input type="text" id="p1-retouch" value="基本レタッチ"></div>
         </div>
       </div>
-
       <div class="plan-card">
         <h3>スタンダードプラン</h3>
         <div class="grid2">
@@ -163,7 +156,6 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
           <div class="fg"><label>レタッチ</label><input type="text" id="p2-retouch" value="フルレタッチ"></div>
         </div>
       </div>
-
       <div class="plan-card">
         <h3>プレミアムプラン</h3>
         <div class="grid2">
@@ -173,181 +165,193 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
           <div class="fg"><label>レタッチ</label><input type="text" id="p3-retouch" value="フルレタッチ"></div>
         </div>
       </div>
-
-      <button class="btn btn-p" onclick="savePlans()">プランを保存してお客様ページに反映</button>
+      <button class="btn btn-p" onclick="savePlans()">プランを保存する</button>
+      <p style="font-size:11px;color:#888;margin-top:6px">※ プランの内容変更はindex.htmlの書き換えが必要です。料金はこちらで管理できます。</p>
     </div>
   </div>
 </div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxV03iKnfqUEmQzqa_xkAhBNNYxsvyT-wtkM_6pG6HDPk6xbq2Uo3f7Np4olgm2QoT1Zw/exec';
+const URL = 'https://script.google.com/macros/s/AKfycbxV03iKnfqUEmQzqa_xkAhBNNYxsvyT-wtkM_6pG6HDPk6xbq2Uo3f7Np4olgm2QoT1Zw/exec';
+let allBookings = [];
+let calStatus = {};
+let selected = new Set();
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+const DJ = ['日','月','火','水','木','金','土'];
+const MJ = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
-// ===================== タブ =====================
+// ===== タブ =====
 function showTab(id, btn) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
-  if (id === 'bookings' || id === 'dashboard') loadBookings();
-  if (id === 'calendar') buildCal();
+  if (id === 'bookings') loadBookings();
+  if (id === 'dashboard') { loadBookings(); loadAvailability(); }
+  if (id === 'calendar') loadAvailability();
 }
 
-// ===================== 予約データ =====================
-let allBookings = [
-  {name:'田中 太郎', email:'taro@ex.com', date:'2026-07-01', plan:'スタンダードプラン', price:55000, status:'confirmed'},
-  {name:'鈴木 美咲', email:'misaki@ex.com', date:'2026-07-08', plan:'ライトプラン', price:30000, status:'pending'},
-];
-let filterMode = 'all';
-
-function loadBookings() {
-  renderBookings();
-  updateStats();
+// ===== 予約読み込み =====
+async function loadBookings() {
+  try {
+    const res = await fetch(URL + '?action=list');
+    const json = await res.json();
+    if (json.status === 'ok') {
+      allBookings = json.bookings;
+      renderBookings('all');
+      updateStats();
+    }
+  } catch(e) {
+    showAlert('book-alert', 'error', 'スプレッドシートから読み込めませんでした。');
+  }
 }
 
 function renderBookings(filter) {
-  const f = filter || filterMode;
-  const items = f === 'all' ? allBookings : allBookings.filter(b => b.status === f);
+  const items = filter === 'all' ? allBookings : allBookings.filter(b => b.status === filter);
   const html = items.length === 0
     ? '<p style="color:#888;font-size:13px">予約がありません</p>'
     : items.map(b => `
       <div class="brow">
-        <div class="av">${b.name[0]}</div>
+        <div class="av">${b.name ? b.name[0] : '?'}</div>
         <div class="brow-info">
           <div class="brow-name">${b.name}</div>
-          <div class="brow-meta">${b.date} · ${b.plan} · ¥${b.price.toLocaleString()}</div>
+          <div class="brow-meta">${b.date} · ${b.plan} · ¥${Number(b.price).toLocaleString()}</div>
         </div>
-        <span class="badge ${b.status === 'confirmed' ? 'b-ok' : 'b-pend'}">${b.status === 'confirmed' ? '確定' : '仮予約'}</span>
-        ${b.status === 'pending' ? `<button class="btn btn-p" style="padding:4px 10px;font-size:11px" onclick="confirmB('${b.email}')">確定</button>` : ''}
+        <span class="badge ${b.status==='確定'||b.status==='confirmed'?'b-ok':'b-pend'}">${b.status==='確定'||b.status==='confirmed'?'確定':'仮予約'}</span>
+        ${b.status==='仮予約'||b.status==='pending'?`<button class="btn btn-p" style="padding:4px 10px;font-size:11px" onclick="confirmBooking('${b.bookingId}')">確定</button>`:''}
       </div>`).join('');
   const el = document.getElementById('booking-list');
   if (el) el.innerHTML = html;
   const dash = document.getElementById('dash-bookings');
   if (dash) dash.innerHTML = allBookings.slice(0,3).map(b => `
     <div class="brow">
-      <div class="av">${b.name[0]}</div>
+      <div class="av">${b.name ? b.name[0] : '?'}</div>
       <div class="brow-info">
         <div class="brow-name">${b.name}</div>
         <div class="brow-meta">${b.date} · ${b.plan}</div>
       </div>
-      <span class="badge ${b.status === 'confirmed' ? 'b-ok' : 'b-pend'}">${b.status === 'confirmed' ? '確定' : '仮予約'}</span>
-    </div>`).join('');
+      <span class="badge ${b.status==='確定'||b.status==='confirmed'?'b-ok':'b-pend'}">${b.status==='確定'||b.status==='confirmed'?'確定':'仮予約'}</span>
+    </div>`).join('') || '<p style="color:#888;font-size:13px">予約がありません</p>';
 }
 
-function confirmB(email) {
-  const b = allBookings.find(b => b.email === email);
-  if (b) { b.status = 'confirmed'; renderBookings(); updateStats(); }
+async function confirmBooking(bookingId) {
+  try {
+    const formData = new FormData();
+    formData.append('payload', JSON.stringify({ action: 'updateBookingStatus', bookingId, status: '確定' }));
+    await fetch(URL, { method: 'POST', body: formData, mode: 'no-cors' });
+    showAlert('book-alert', 'success', '確定しました！');
+    setTimeout(loadBookings, 1000);
+  } catch(e) {
+    showAlert('book-alert', 'error', '更新に失敗しました。');
+  }
 }
 
 function filterB(f, btn) {
-  filterMode = f;
-  document.querySelectorAll('#tab-bookings .btn').forEach(b => { b.style.borderColor = ''; b.style.color = ''; });
-  btn.style.borderColor = '#534AB7'; btn.style.color = '#534AB7';
+  document.querySelectorAll('#tab-bookings .btn').forEach(b => { b.style.borderColor=''; b.style.color=''; });
+  btn.style.borderColor='#534AB7'; btn.style.color='#534AB7';
   renderBookings(f);
 }
 
-function updateStats() {
-  const now = new Date();
-  const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const monthly = allBookings.filter(b => b.date.startsWith(ym));
-  document.getElementById('st-total').textContent = monthly.length;
-  document.getElementById('st-rev').textContent = '¥' + monthly.filter(b=>b.status==='confirmed').reduce((a,b)=>a+b.price,0).toLocaleString();
-  const keys = Object.keys(calStatus);
-  const availCount = keys.filter(k => k.startsWith(ym) && calStatus[k] === 'available').length;
-  document.getElementById('st-avail').textContent = availCount;
+// ===== 空き日程 =====
+async function loadAvailability() {
+  try {
+    const res = await fetch(URL + '?action=availability');
+    const json = await res.json();
+    if (json.status === 'ok') { calStatus = json.availability; buildCal(); updateStats(); }
+  } catch(e) { buildCal(); }
 }
-
-// ===================== カレンダー =====================
-let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth();
-let calStatus = {};
-let selected = new Set();
-const DJ = ['日','月','火','水','木','金','土'];
-const MJ = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
 function buildCal() {
   const grid = document.getElementById('cal-grid');
+  if (!grid) return;
   grid.innerHTML = '';
-  DJ.forEach(d => { const e = document.createElement('div'); e.className = 'cal-day'; e.textContent = d; grid.appendChild(e); });
-  const first = new Date(calYear, calMonth, 1).getDay();
-  const total = new Date(calYear, calMonth+1, 0).getDate();
+  DJ.forEach(d => { const e = document.createElement('div'); e.className='cal-day'; e.textContent=d; grid.appendChild(e); });
+  const first = new Date(calYear,calMonth,1).getDay();
+  const total = new Date(calYear,calMonth+1,0).getDate();
   const today = new Date();
   document.getElementById('cal-label').textContent = `${calYear}年 ${MJ[calMonth]}`;
-  for (let i = 0; i < first; i++) { const e = document.createElement('div'); e.className = 'cal-cell empty'; grid.appendChild(e); }
-  for (let d = 1; d <= total; d++) {
+  for (let i=0;i<first;i++) { const e=document.createElement('div'); e.className='cal-cell empty'; grid.appendChild(e); }
+  for (let d=1;d<=total;d++) {
     const key = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const el = document.createElement('div'); el.textContent = d;
-    const isPast = new Date(calYear, calMonth, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    if (isPast) { el.className = 'cal-cell past'; }
-    else if (selected.has(key)) { el.className = 'cal-cell selected'; el.onclick = () => { selected.delete(key); buildCal(); }; }
-    else if (calStatus[key] === 'available') { el.className = 'cal-cell available'; el.onclick = () => { selected.add(key); buildCal(); }; }
-    else if (calStatus[key] === 'booked') { el.className = 'cal-cell booked'; el.onclick = () => { selected.add(key); buildCal(); }; }
-    else { el.className = 'cal-cell'; el.onclick = () => { selected.add(key); buildCal(); }; }
+    const isPast = new Date(calYear,calMonth,d) < new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    if (isPast) { el.className='cal-cell past'; }
+    else if (selected.has(key)) { el.className='cal-cell selected'; el.onclick=()=>{ selected.delete(key); buildCal(); }; }
+    else if (calStatus[key]==='available') { el.className='cal-cell available'; el.onclick=()=>{ selected.add(key); buildCal(); }; }
+    else if (calStatus[key]==='booked') { el.className='cal-cell booked'; el.onclick=()=>{ selected.add(key); buildCal(); }; }
+    else { el.className='cal-cell'; el.onclick=()=>{ selected.add(key); buildCal(); }; }
     grid.appendChild(el);
   }
-  renderAvailList();
-  updateStats();
 }
 
 function calChange(d) {
-  calMonth += d;
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  if (calMonth < 0) { calMonth = 11; calYear--; }
+  calMonth+=d;
+  if (calMonth>11){calMonth=0;calYear++}
+  if (calMonth<0){calMonth=11;calYear--}
   buildCal();
 }
 
 function setStatus(status) {
-  if (selected.size === 0) { showCalAlert('error', '日付を選択してください'); return; }
-  selected.forEach(key => {
-    if (status === 'none') delete calStatus[key];
-    else calStatus[key] = status;
-  });
+  if (selected.size===0) { showAlert('cal-alert','error','日付を選択してください'); return; }
+  selected.forEach(key => { if (status==='none') delete calStatus[key]; else calStatus[key]=status; });
   selected.clear();
   buildCal();
-  showCalAlert('success', `${status === 'available' ? '空き' : status === 'booked' ? '予約済み' : '削除'}に設定しました。スプレッドシートの「空き日程」シートにも同じ内容を入力してください。`);
+  showAlert('cal-alert','success',`${selected.size||''}設定しました。「スプレッドシートに保存する」を押して確定してください。`);
 }
 
-function clearSelected() { selected.clear(); buildCal(); }
+function clearSel() { selected.clear(); buildCal(); }
 
-function showCalAlert(type, msg) {
-  const el = document.getElementById('cal-alert');
+async function saveAvailability() {
+  const btn = document.getElementById('save-avail-btn');
+  btn.textContent = '保存中...'; btn.disabled = true;
+  const dates = Object.keys(calStatus).map(date => ({ date, status: calStatus[date] }));
+  try {
+    const formData = new FormData();
+    formData.append('payload', JSON.stringify({ action: 'updateAvailability', dates }));
+    await fetch(URL, { method: 'POST', body: formData, mode: 'no-cors' });
+    showAlert('cal-alert', 'success', 'スプレッドシートに保存しました！お客様ページに反映されました。');
+  } catch(e) {
+    showAlert('cal-alert', 'error', '保存に失敗しました。');
+  }
+  btn.textContent = 'スプレッドシートに保存する'; btn.disabled = false;
+}
+
+// ===== プラン =====
+function savePlans() {
+  const plans = {
+    p1: { price: document.getElementById('p1-price').value, time: document.getElementById('p1-time').value, photos: document.getElementById('p1-photos').value, retouch: document.getElementById('p1-retouch').value },
+    p2: { price: document.getElementById('p2-price').value, time: document.getElementById('p2-time').value, photos: document.getElementById('p2-photos').value, retouch: document.getElementById('p2-retouch').value },
+    p3: { price: document.getElementById('p3-price').value, time: document.getElementById('p3-time').value, photos: document.getElementById('p3-photos').value, retouch: document.getElementById('p3-retouch').value },
+  };
+  localStorage.setItem('asuphoto_plans', JSON.stringify(plans));
+  showAlert('plan-alert', 'success', '保存しました！');
+}
+
+// ===== 統計 =====
+function updateStats() {
+  const now = new Date();
+  const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const monthly = allBookings.filter(b => String(b.date).startsWith(ym));
+  document.getElementById('st-total').textContent = monthly.length;
+  document.getElementById('st-rev').textContent = '¥' + monthly.filter(b=>b.status==='確定'||b.status==='confirmed').reduce((a,b)=>a+Number(b.price),0).toLocaleString();
+  const availCount = Object.keys(calStatus).filter(k => k.startsWith(ym) && calStatus[k]==='available').length;
+  document.getElementById('st-avail').textContent = availCount;
+}
+
+// ===== アラート =====
+function showAlert(id, type, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
   el.className = 'alert alert-' + type;
   el.textContent = msg;
   el.style.display = 'block';
   setTimeout(() => { el.style.display = 'none'; }, 4000);
 }
 
-function renderAvailList() {
-  const el = document.getElementById('avail-list');
-  const keys = Object.keys(calStatus).sort();
-  if (keys.length === 0) { el.innerHTML = '<p style="color:#888;font-size:12px">設定なし</p>'; return; }
-  el.innerHTML = keys.map(k => `
-    <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:0.5px solid #f0ede9;font-size:12px">
-      <span style="flex:1">${k}</span>
-      <span class="badge ${calStatus[k]==='available'?'b-ok':'b-pend'}">${calStatus[k]==='available'?'空き':'予約済み'}</span>
-      <button class="btn btn-d" style="padding:2px 8px;font-size:11px" onclick="deleteCalStatus('${k}')">削除</button>
-    </div>`).join('');
-}
-
-function deleteCalStatus(key) { delete calStatus[key]; buildCal(); }
-
-// ===================== プラン =====================
-function savePlans() {
-  const plans = {
-    light: { price: document.getElementById('p1-price').value, time: document.getElementById('p1-time').value, photos: document.getElementById('p1-photos').value, retouch: document.getElementById('p1-retouch').value },
-    standard: { price: document.getElementById('p2-price').value, time: document.getElementById('p2-time').value, photos: document.getElementById('p2-photos').value, retouch: document.getElementById('p2-retouch').value },
-    premium: { price: document.getElementById('p3-price').value, time: document.getElementById('p3-time').value, photos: document.getElementById('p3-photos').value, retouch: document.getElementById('p3-retouch').value },
-  };
-  localStorage.setItem('asuphoto_plans', JSON.stringify(plans));
-  const el = document.getElementById('plan-alert');
-  el.className = 'alert alert-success';
-  el.textContent = '保存しました！お客様ページを再読み込みすると反映されます。';
-  el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 3000);
-}
-
 // 初期化
 loadBookings();
-buildCal();
+loadAvailability();
 </script>
 </body>
 </html>
