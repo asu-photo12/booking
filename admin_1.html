@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>asuphoto — 管理画面</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f5f4f0;color:#1a1a1a;font-size:14px}
+.header{background:#534AB7;color:#fff;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:500}
+.container{max-width:900px;margin:0 auto;padding:1.5rem 1rem}
+.tabs{display:flex;gap:4px;margin-bottom:1.5rem;background:#fff;border-radius:10px;padding:4px;border:0.5px solid #e0deda}
+.tab-btn{flex:1;padding:8px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#888;font-family:inherit;transition:all .15s}
+.tab-btn.active{background:#534AB7;color:#fff}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.card{background:#fff;border-radius:12px;border:0.5px solid #e0deda;padding:1.5rem;margin-bottom:1rem}
+.card h2{font-size:15px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.card h2::before{content:'';display:block;width:4px;height:16px;background:#534AB7;border-radius:2px}
+.btn{padding:8px 16px;border-radius:8px;border:0.5px solid #ddd;background:#fff;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
+.btn:hover{border-color:#534AB7;color:#534AB7}
+.btn-p{background:#534AB7;color:#fff;border-color:#534AB7}
+.btn-p:hover{background:#3C3489;color:#fff}
+.btn-d{background:#FCEBEB;color:#A32D2D;border-color:#F09595}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.fg label{font-size:12px;font-weight:500;color:#555}
+.fg input,.fg select{width:100%;padding:8px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;font-family:inherit;background:#fff;color:#1a1a1a}
+.fg input:focus,.fg select:focus{outline:none;border-color:#534AB7}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+/* カレンダー */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-nav button{background:#f5f4f0;border:0.5px solid #ddd;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px}
+.cal-nav span{font-size:14px;font-weight:500}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day{text-align:center;font-size:11px;color:#888;padding:3px 0;font-weight:500}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:6px;cursor:pointer;border:0.5px solid transparent;transition:all .1s;flex-direction:column;gap:1px}
+.cal-cell.empty,.cal-cell.past{cursor:default;color:#ccc}
+.cal-cell.available{background:#EAF3DE;color:#27500A}
+.cal-cell.partial{background:#D4EDFF;color:#0C447C}
+.cal-cell.booked{background:#FAEEDA;color:#633806}
+.cal-cell.selected{background:#534AB7;color:#fff;font-weight:500}
+.cal-cell .slot-count{font-size:9px;opacity:.8}
+.legend{display:flex;gap:12px;margin:8px 0;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#666}
+.legend-dot{width:9px;height:9px;border-radius:50%}
+/* 時間スロット */
+.time-panel{background:#f5f4f0;border-radius:10px;padding:1rem;margin-top:1rem;display:none}
+.time-panel.show{display:block}
+.time-panel h3{font-size:13px;font-weight:500;margin-bottom:10px}
+.time-slots{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.time-slot{padding:6px 4px;border-radius:6px;border:0.5px solid #ddd;background:#fff;cursor:pointer;font-size:12px;text-align:center;transition:all .15s}
+.time-slot:hover{border-color:#534AB7}
+.time-slot.available{background:#EAF3DE;border-color:#97C459;color:#27500A}
+.time-slot.booked{background:#FAEEDA;border-color:#EF9F27;color:#633806;cursor:not-allowed}
+.time-slot.selected{background:#534AB7;border-color:#534AB7;color:#fff}
+/* 予約一覧 */
+.brow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:0.5px solid #e0deda;border-radius:10px;margin-bottom:6px}
+.av{width:34px;height:34px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#26215C;flex-shrink:0}
+.brow-info{flex:1;min-width:0}
+.brow-name{font-size:13px;font-weight:500}
+.brow-meta{font-size:11px;color:#888;margin-top:1px}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:500}
+.b-ok{background:#EAF3DE;color:#27500A}
+.b-pend{background:#FAEEDA;color:#633806}
+.plan-card{border:0.5px solid #e0deda;border-radius:10px;padding:1rem;margin-bottom:10px}
+.plan-card h3{font-size:14px;font-weight:500;margin-bottom:10px;color:#534AB7}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.stat{background:#f5f4f0;border-radius:8px;padding:10px 12px}
+.stat-l{font-size:11px;color:#888}
+.stat-v{font-size:20px;font-weight:500;margin-top:2px}
+.alert{border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:10px}
+.alert-success{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.alert-error{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595}
+.alert-loading{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>asuphoto 管理画面</h1>
+  <span id="sync-status" style="font-size:12px;opacity:.8"></span>
+</div>
+<div class="container">
+  <div id="global-alert" style="display:none" class="alert"></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('dashboard',this)">ダッシュボード</button>
+    <button class="tab-btn" onclick="showTab('calendar',this)">空き日程管理</button>
+    <button class="tab-btn" onclick="showTab('bookings',this)">予約一覧</button>
+    <button class="tab-btn" onclick="showTab('plans',this)">プラン設定</button>
+  </div>
+
+  <!-- ダッシュボード -->
+  <div id="tab-dashboard" class="tab-content active">
+    <div class="stat-row">
+      <div class="stat"><div class="stat-l">今月の予約</div><div class="stat-v" id="st-total">—</div></div>
+      <div class="stat"><div class="stat-l">空き日数</div><div class="stat-v" id="st-avail">—</div></div>
+      <div class="stat"><div class="stat-l">今月の売上</div><div class="stat-v" id="st-rev">—</div></div>
+    </div>
+    <div class="card">
+      <h2>直近の予約</h2>
+      <div id="dash-bookings"><p style="color:#888;font-size:13px">読み込み中...</p></div>
+    </div>
+  </div>
+
+  <!-- 空き日程管理 -->
+  <div id="tab-calendar" class="tab-content">
+    <div class="card">
+      <h2>空き日程・時間を設定する</h2>
+      <div id="cal-alert" style="display:none" class="alert"></div>
+      <div class="cal-nav">
+        <button onclick="calChange(-1)">‹</button>
+        <span id="cal-label"></span>
+        <button onclick="calChange(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#97C459"></div>全時間空き</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#5BAEE0"></div>一部空き</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#EF9F27"></div>予約済み</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#534AB7"></div>選択中</div>
+      </div>
+      <p style="font-size:12px;color:#888;margin-top:8px">日付をクリックして時間帯を設定してください</p>
+
+      <!-- 時間スロットパネル -->
+      <div class="time-panel" id="time-panel">
+        <h3 id="time-panel-title">時間帯を設定</h3>
+        <div class="time-slots" id="time-slots"></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="setAllSlots('available')">全時間を空きに</button>
+          <button class="btn" onclick="setAllSlots('booked')">全時間を予約済みに</button>
+          <button class="btn" onclick="setAllSlots('none')">全時間をクリア</button>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid #e0deda;display:flex;gap:8px;align-items:center">
+        <button class="btn btn-p" onclick="saveAvailability()" id="save-avail-btn">スプレッドシートに保存する</button>
+        <p style="font-size:11px;color:#888">設定後に必ずこのボタンを押してください</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 予約一覧 -->
+  <div id="tab-bookings" class="tab-content">
+    <div class="card">
+      <h2>予約一覧</h2>
+      <div id="book-alert" style="display:none" class="alert"></div>
+      <div style="display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap">
+        <button class="btn" style="border-color:#534AB7;color:#534AB7" onclick="filterB('all',this)">すべて</button>
+        <button class="btn" onclick="filterB('confirmed',this)">確定</button>
+        <button class="btn" onclick="filterB('pending',this)">仮予約</button>
+      </div>
+      <div id="booking-list"><p style="color:#888;font-size:13px">読み込み中...</p></div>
+    </div>
+  </div>
+
+  <!-- プラン設定 -->
+  <div id="tab-plans" class="tab-content">
+    <div class="card">
+      <h2>料金プランを編集する</h2>
+      <div id="plan-alert" style="display:none" class="alert"></div>
+      <div class="plan-card">
+        <h3>ライトプラン</h3>
+        <div class="grid2">
+          <div class="fg"><label>料金（円）</label><input type="number" id="p1-price" value="30000"></div>
+          <div class="fg"><label>撮影時間</label><input type="text" id="p1-time" value="2時間"></div>
+          <div class="fg"><label>データ納品枚数</label><input type="text" id="p1-photos" value="30枚"></div>
+          <div class="fg"><label>レタッチ</label><input type="text" id="p1-retouch" value="基本レタッチ"></div>
+        </div>
+      </div>
+      <div class="plan-card">
+        <h3>スタンダードプラン</h3>
+        <div class="grid2">
+          <div class="fg"><label>料金（円）</label><input type="number" id="p2-price" value="55000"></div>
+          <div class="fg"><label>撮影時間</label><input type="text" id="p2-time" value="4時間"></div>
+          <div class="fg"><label>データ納品枚数</label><input type="text" id="p2-photos" value="80枚"></div>
+          <div class="fg"><label>レタッチ</label><input type="text" id="p2-retouch" value="フルレタッチ"></div>
+        </div>
+      </div>
+      <div class="plan-card">
+        <h3>プレミアムプラン</h3>
+        <div class="grid2">
+          <div class="fg"><label>料金（円）</label><input type="number" id="p3-price" value="90000"></div>
+          <div class="fg"><label>撮影時間</label><input type="text" id="p3-time" value="終日"></div>
+          <div class="fg"><label>データ納品枚数</label><input type="text" id="p3-photos" value="無制限"></div>
+          <div class="fg"><label>レタッチ</label><input type="text" id="p3-retouch" value="フルレタッチ"></div>
+        </div>
+      </div>
+      <button class="btn btn-p" onclick="savePlans()">プランを保存する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxV03iKnfqUEmQzqa_xkAhBNNYxsvyT-wtkM_6pG6HDPk6xbq2Uo3f7Np4olgm2QoT1Zw/exec';
+const HOURS = ['9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+let allBookings = [];
+let calStatus = {}; // key: "2026-07-01" → { slots: { "9:00": "available", ... } } or "available"/"booked"
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let selectedDay = null;
+const DJ=['日','月','火','水','木','金','土'];
+const MJ=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+// ===== タブ =====
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id==='bookings') loadBookings();
+  if (id==='dashboard') { loadBookings(); loadAvailability(); }
+  if (id==='calendar') loadAvailability();
+}
+
+// ===== 予約 =====
+async function loadBookings() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL+'?action=list');
+    const json = await res.json();
+    if (json.status==='ok') { allBookings=json.bookings; renderBookings('all'); updateStats(); }
+  } catch(e) {}
+}
+
+function renderBookings(filter) {
+  const items = filter==='all' ? allBookings : allBookings.filter(b=>b.status===filter||b.status===(filter==='confirmed'?'確定':'仮予約'));
+  const html = items.length===0 ? '<p style="color:#888;font-size:13px">予約がありません</p>'
+    : items.map(b=>`<div class="brow">
+      <div class="av">${b.name?b.name[0]:'?'}</div>
+      <div class="brow-info">
+        <div class="brow-name">${b.name}</div>
+        <div class="brow-meta">${b.date}${b.time?' '+b.time:''} · ${b.plan} · ¥${Number(b.price).toLocaleString()}</div>
+      </div>
+      <span class="badge ${b.status==='確定'||b.status==='confirmed'?'b-ok':'b-pend'}">${b.status==='確定'||b.status==='confirmed'?'確定':'仮予約'}</span>
+      ${b.status==='仮予約'||b.status==='pending'?`<button class="btn btn-p" style="padding:4px 10px;font-size:11px" onclick="confirmBooking('${b.bookingId}')">確定</button>`:''}
+    </div>`).join('');
+  const el=document.getElementById('booking-list'); if(el) el.innerHTML=html;
+  const dash=document.getElementById('dash-bookings');
+  if(dash) dash.innerHTML=allBookings.slice(0,3).map(b=>`<div class="brow">
+    <div class="av">${b.name?b.name[0]:'?'}</div>
+    <div class="brow-info"><div class="brow-name">${b.name}</div><div class="brow-meta">${b.date}${b.time?' '+b.time:''} · ${b.plan}</div></div>
+    <span class="badge ${b.status==='確定'||b.status==='confirmed'?'b-ok':'b-pend'}">${b.status==='確定'||b.status==='confirmed'?'確定':'仮予約'}</span>
+  </div>`).join('')||'<p style="color:#888;font-size:13px">予約がありません</p>';
+}
+
+async function confirmBooking(bookingId) {
+  try {
+    const fd=new FormData(); fd.append('payload',JSON.stringify({action:'updateBookingStatus',bookingId,status:'確定'}));
+    await fetch(APPS_SCRIPT_URL,{method:'POST',body:fd,mode:'no-cors'});
+    showAlert('book-alert','success','確定しました！');
+    setTimeout(loadBookings,1000);
+  } catch(e) { showAlert('book-alert','error','更新に失敗しました。'); }
+}
+
+function filterB(f,btn) {
+  document.querySelectorAll('#tab-bookings .btn').forEach(b=>{b.style.borderColor='';b.style.color='';});
+  btn.style.borderColor='#534AB7'; btn.style.color='#534AB7';
+  renderBookings(f);
+}
+
+// ===== 空き日程 =====
+async function loadAvailability() {
+  try {
+    const res=await fetch(APPS_SCRIPT_URL+'?action=availability');
+    const json=await res.json();
+    if(json.status==='ok') { calStatus=json.availability||{}; }
+  } catch(e) {}
+  buildCal();
+  updateStats();
+}
+
+function getDayStatus(key) {
+  const val=calStatus[key];
+  if(!val) return 'none';
+  if(typeof val==='string') return val;
+  // スロットオブジェクトの場合
+  const slots=Object.values(val);
+  if(slots.length===0) return 'none';
+  const avail=slots.filter(s=>s==='available').length;
+  const booked=slots.filter(s=>s==='booked').length;
+  if(avail>0 && booked===0) return 'available';
+  if(avail>0 && booked>0) return 'partial';
+  if(booked>0 && avail===0) return 'booked';
+  return 'none';
+}
+
+function getSlotCount(key) {
+  const val=calStatus[key];
+  if(!val||typeof val==='string') return '';
+  const avail=Object.values(val).filter(s=>s==='available').length;
+  return avail>0?avail+'枠':'';
+}
+
+function buildCal() {
+  const grid=document.getElementById('cal-grid'); if(!grid) return;
+  grid.innerHTML='';
+  DJ.forEach(d=>{const e=document.createElement('div');e.className='cal-day';e.textContent=d;grid.appendChild(e);});
+  const first=new Date(calYear,calMonth,1).getDay(),total=new Date(calYear,calMonth+1,0).getDate(),today=new Date();
+  document.getElementById('cal-label').textContent=`${calYear}年 ${MJ[calMonth]}`;
+  for(let i=0;i<first;i++){const e=document.createElement('div');e.className='cal-cell empty';grid.appendChild(e);}
+  for(let d=1;d<=total;d++){
+    const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el=document.createElement('div');
+    const dayNum=document.createElement('span');dayNum.textContent=d;
+    el.appendChild(dayNum);
+    const isPast=new Date(calYear,calMonth,d)<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const status=getDayStatus(key);
+    const count=getSlotCount(key);
+    if(count){const sc=document.createElement('span');sc.className='slot-count';sc.textContent=count;el.appendChild(sc);}
+    if(isPast){el.className='cal-cell past';}
+    else if(key===selectedDay){el.className='cal-cell selected';el.onclick=()=>selectDay(key);}
+    else if(status==='available'){el.className='cal-cell available';el.onclick=()=>selectDay(key);}
+    else if(status==='partial'){el.className='cal-cell partial';el.onclick=()=>selectDay(key);}
+    else if(status==='booked'){el.className='cal-cell booked';el.onclick=()=>selectDay(key);}
+    else{el.className='cal-cell';el.onclick=()=>selectDay(key);}
+    grid.appendChild(el);
+  }
+}
+
+function selectDay(key) {
+  selectedDay=key;
+  buildCal();
+  showTimePanel(key);
+}
+
+function showTimePanel(key) {
+  const panel=document.getElementById('time-panel');
+  const title=document.getElementById('time-panel-title');
+  const slotsEl=document.getElementById('time-slots');
+  title.textContent=`${key} の時間帯設定`;
+  panel.classList.add('show');
+  const dayData=calStatus[key];
+  slotsEl.innerHTML='';
+  HOURS.forEach(h=>{
+    const el=document.createElement('div');
+    el.className='time-slot';
+    el.textContent=h;
+    let slotStatus='none';
+    if(typeof dayData==='string'){slotStatus=dayData;}
+    else if(dayData&&dayData[h]){slotStatus=dayData[h];}
+    if(slotStatus==='available') el.classList.add('available');
+    else if(slotStatus==='booked') el.classList.add('booked');
+    if(slotStatus!=='booked') {
+      el.onclick=()=>toggleSlot(key,h,el);
+    }
+    slotsEl.appendChild(el);
+  });
+}
+
+function toggleSlot(key,hour,el) {
+  if(!calStatus[key]||typeof calStatus[key]==='string') {
+    const prev=calStatus[key]||'none';
+    calStatus[key]={};
+    if(prev==='available'||prev==='booked') {
+      HOURS.forEach(h=>{ calStatus[key][h]=prev; });
+    }
+  }
+  const current=calStatus[key][hour]||'none';
+  if(current==='available'){calStatus[key][hour]='none';el.className='time-slot';}
+  else{calStatus[key][hour]='available';el.className='time-slot available';}
+  buildCal();
+}
+
+function setAllSlots(status) {
+  if(!selectedDay) return;
+  if(status==='none'){delete calStatus[selectedDay];}
+  else {
+    calStatus[selectedDay]={};
+    HOURS.forEach(h=>{calStatus[selectedDay][h]=status;});
+  }
+  buildCal();
+  showTimePanel(selectedDay);
+}
+
+function calChange(d) {
+  calMonth+=d;
+  if(calMonth>11){calMonth=0;calYear++;}
+  if(calMonth<0){calMonth=11;calYear--;}
+  selectedDay=null;
+  document.getElementById('time-panel').classList.remove('show');
+  buildCal();
+}
+
+async function saveAvailability() {
+  const btn=document.getElementById('save-avail-btn');
+  btn.textContent='保存中...'; btn.disabled=true;
+  // フラットな形式に変換してスプレッドシートへ保存
+  const dates=[];
+  Object.keys(calStatus).forEach(date=>{
+    const val=calStatus[date];
+    if(typeof val==='string'){
+      dates.push({date,status:val});
+    } else {
+      Object.keys(val).forEach(hour=>{
+        if(val[hour]&&val[hour]!=='none'){
+          dates.push({date,hour,status:val[hour]});
+        }
+      });
+    }
+  });
+  try {
+    const fd=new FormData(); fd.append('payload',JSON.stringify({action:'updateAvailability',dates}));
+    await fetch(APPS_SCRIPT_URL,{method:'POST',body:fd,mode:'no-cors'});
+    showAlert('cal-alert','success','保存しました！お客様ページに反映されました。');
+  } catch(e) { showAlert('cal-alert','error','保存に失敗しました。'); }
+  btn.textContent='スプレッドシートに保存する'; btn.disabled=false;
+}
+
+// ===== プラン =====
+function savePlans() {
+  const plans={
+    p1:{price:document.getElementById('p1-price').value,time:document.getElementById('p1-time').value,photos:document.getElementById('p1-photos').value,retouch:document.getElementById('p1-retouch').value},
+    p2:{price:document.getElementById('p2-price').value,time:document.getElementById('p2-time').value,photos:document.getElementById('p2-photos').value,retouch:document.getElementById('p2-retouch').value},
+    p3:{price:document.getElementById('p3-price').value,time:document.getElementById('p3-time').value,photos:document.getElementById('p3-photos').value,retouch:document.getElementById('p3-retouch').value},
+  };
+  localStorage.setItem('asuphoto_plans',JSON.stringify(plans));
+  showAlert('plan-alert','success','保存しました！');
+}
+
+// ===== 統計 =====
+function updateStats() {
+  const now=new Date();
+  const ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const monthly=allBookings.filter(b=>String(b.date).startsWith(ym));
+  document.getElementById('st-total').textContent=monthly.length;
+  document.getElementById('st-rev').textContent='¥'+monthly.filter(b=>b.status==='確定'||b.status==='confirmed').reduce((a,b)=>a+Number(b.price),0).toLocaleString();
+  const availCount=Object.keys(calStatus).filter(k=>{
+    const s=getDayStatus(k);
+    return k.startsWith(ym)&&(s==='available'||s==='partial');
+  }).length;
+  document.getElementById('st-avail').textContent=availCount;
+}
+
+// ===== アラート =====
+function showAlert(id,type,msg) {
+  const el=document.getElementById(id); if(!el) return;
+  el.className='alert alert-'+type; el.textContent=msg; el.style.display='block';
+  setTimeout(()=>{el.style.display='none';},4000);
+}
+
+loadBookings();
+loadAvailability();
+</script>
+</body>
+</html>
