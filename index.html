@@ -813,12 +813,16 @@ function restoreFormData() {
     if (localStorage.getItem('asuphoto_policy_opened') === '1' || localStorage.getItem('asuphoto_policy_agreed') === '1') {
       enableAgreeCheck();
     }
-    // 同意済みならチェックを入れる
+    // 同意済みならチェックを入れてバリデーションも通す
     if (localStorage.getItem('asuphoto_policy_agreed') === '1') {
       setTimeout(function() {
+        const locked = document.getElementById('agree-locked');
+        const unlocked = document.getElementById('agree-unlocked');
         const agreeEl = document.getElementById('agree-check');
+        if (locked) locked.style.display = 'none';
+        if (unlocked) unlocked.style.display = 'flex';
         if (agreeEl) agreeEl.checked = true;
-      }, 100);
+      }, 200);
     }
     updateConfirm();
   } catch(e) {}
