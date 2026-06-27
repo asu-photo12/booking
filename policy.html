@@ -110,5 +110,10 @@ function updateAgree() {
   const checked = document.getElementById('policy-agree').checked;
   document.getElementById('agree-msg').style.display = checked ? 'none' : 'block';
   document.getElementById('agree-done').style.display = checked ? 'block' : 'none';
+  if (checked) {
+    setTimeout(function() {
+      window.location.href = 'index.html';
+    }, 1500);
+  }
 }
 </script>
