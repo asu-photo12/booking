@@ -286,7 +286,15 @@ textarea{resize:vertical;min-height:80px}
       <div class="form-group"><label>メールアドレス<span class="required">*</span></label><input type="email" id="f-email" placeholder="hanako@example.com"></div>
       <div class="form-group"><label>電話番号<span class="required">*</span></label><input type="tel" id="f-phone" placeholder="090-0000-0000"></div>
       <div class="form-group"><label>InstagramID<span class="required">*</span></label><input type="text" id="f-instagram" placeholder="@username"></div>
-      <div class="form-group full"><label>ご住所（県・市区まで）<span class="required">*</span></label><input type="text" id="f-address" placeholder="例）東京都渋谷区、神奈川県横浜市中区"></div>
+      <div class="form-group full">
+        <label>ご住所（県・市区まで）<span class="required">*</span></label>
+        <div style="display:flex;gap:8px;margin-bottom:6px">
+          <input type="text" id="f-zip" placeholder="郵便番号（例：1500001）" style="max-width:200px" oninput="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="7">
+          <button type="button" onclick="searchZip()" style="padding:8px 14px;border-radius:8px;border:0.5px solid #8B6244;background:#fff;color:#8B6244;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap">住所を検索</button>
+        </div>
+        <input type="text" id="f-address" placeholder="例）東京都渋谷区、神奈川県横浜市中区">
+        <p id="zip-msg" style="font-size:11px;margin-top:4px;min-height:16px"></p>
+      </div>
       <div class="form-group full"><label>撮影場所のご希望<span class="required">*</span></label><input type="text" id="f-location" placeholder="神社、自宅、公園など"></div>
       <div class="form-group full"><label>お子様のお名前と年齢<span class="required">*</span><span style="font-size:11px;color:#888;font-weight:400">（複数の場合は改行して入力）</span></label><textarea id="f-children" placeholder="例）山田 太郎（3歳）&#10;山田 花子（1歳）" rows="3"></textarea></div>
       <div class="form-group">
@@ -646,6 +654,28 @@ function toggleOption(key) {
     totalEl.style.display = 'block';
   } else {
     totalEl.style.display = 'none';
+  }
+}
+
+async function searchZip() {
+  const zip = document.getElementById('f-zip').value.trim();
+  const msg = document.getElementById('zip-msg');
+  if (zip.length < 7) { msg.style.color='#A32D2D'; msg.textContent='7桁の郵便番号を入力してください'; return; }
+  msg.style.color='#888'; msg.textContent='検索中...';
+  try {
+    const res = await fetch('https://zipcloud.ibsnet.co.jp/api/search?zipcode=' + zip);
+    const json = await res.json();
+    if (json.results && json.results.length > 0) {
+      const r = json.results[0];
+      const addr = r.address1 + r.address2 + r.address3;
+      document.getElementById('f-address').value = addr;
+      msg.style.color='#27500A'; msg.textContent='住所が入力されました';
+      updateConfirm();
+    } else {
+      msg.style.color='#A32D2D'; msg.textContent='住所が見つかりませんでした';
+    }
+  } catch(e) {
+    msg.style.color='#A32D2D'; msg.textContent='検索に失敗しました。手動で入力してください';
   }
 }
 
