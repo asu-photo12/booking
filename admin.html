@@ -281,16 +281,25 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
           <p style="font-size:11px;color:#888">まずこちらで保存してください</p>
         </div>
         <div style="background:#F9F5F1;border-radius:10px;padding:1rem;border:0.5px solid #E8DDD7">
-          <p style="font-size:13px;font-weight:500;margin-bottom:8px">GitHubに反映する（全端末・全ブラウザに適用）</p>
-          <div class="fg" style="margin-bottom:8px">
-            <label>GitHub Personal Access Token</label>
-            <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxx" style="font-family:monospace">
+          <p style="font-size:13px;font-weight:500;margin-bottom:10px">お客様ページに反映する手順</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px">
+              <div style="width:22px;height:22px;border-radius:50%;background:#8B6244;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0">1</div>
+              <div>「全プランを保存する」を押す</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px">
+              <div style="width:22px;height:22px;border-radius:50%;background:#8B6244;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0">2</div>
+              <div>Claudeに「最新のindex.htmlをください」と送る</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px">
+              <div style="width:22px;height:22px;border-radius:50%;background:#8B6244;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0">3</div>
+              <div>ダウンロードしたindex.htmlをテキストエディットで開く → Cmd+A → Cmd+C</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px">
+              <div style="width:22px;height:22px;border-radius:50%;background:#8B6244;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0">4</div>
+              <div>GitHubのindex.htmlを開いて鉛筆アイコン → Ctrl+A → Delete → Cmd+V → Commit changes</div>
+            </div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn btn-p" onclick="pushToGitHub()">GitHubに反映する</button>
-            <p style="font-size:11px;color:#888">トークンはこの画面にのみ保存されます</p>
-          </div>
-          <div id="github-alert" style="display:none;margin-top:8px" class="alert"></div>
         </div>
       </div>
     </div>
