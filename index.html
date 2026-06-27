@@ -371,15 +371,7 @@ function getPlans() {
 }
 
 async function loadPlansFromServer() {
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=plans&t=' + Date.now());
-    const json = await res.json();
-    if (json.status === 'ok' && json.plans) {
-      // サーバーのプランをlocalStorageに上書き保存
-      localStorage.setItem('asuphoto_plans', JSON.stringify(json.plans));
-    }
-  } catch(e) {}
-  renderPlans();
+  // プランはHTMLの内容をそのまま使用
 }
 
 function renderPlans() {
@@ -684,7 +676,6 @@ function showAlert(type,msg){const el=document.getElementById('alert-box');el.cl
 updateConfirm();
 fetchAvailability();
 loadHeaderImage();
-loadPlansFromServer();
 </script>
 </body>
 </html>
