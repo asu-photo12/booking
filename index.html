@@ -260,7 +260,7 @@ textarea{resize:vertical;min-height:80px}
         <input type="checkbox" id="chk-busy">
         <div class="option-check" id="chk-busy-icon"></div>
         <div class="option-info">
-          <div class="option-name">繁忙期（3・4月）</div>
+          <div class="option-name">繁忙期シーズン加算</div>
           <div class="option-desc">3月・4月の撮影に適用（平日・休日ともに適用）</div>
         </div>
         <div class="option-price">+¥3,000</div>
@@ -340,7 +340,7 @@ textarea{resize:vertical;min-height:80px}
     <div style="margin-bottom:1.5rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
       <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
         <input type="checkbox" id="confirm-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
-        <span>こちらの入力内容を確認した後、eriより再度連絡させていただき予約確定となります。</span>
+        <span>こちらの入力内容を確認後、eriより再度連絡させていただきご予約確定となります。</span>
       </label>
     </div>
     <button class="submit-btn" id="submit-btn" onclick="submitBooking()">この内容で予約を申し込む</button>
@@ -617,7 +617,7 @@ const OPTIONS = {
   weekend:   { label: '土日祝日撮影', price: 3000 },
   rental:    { label: 'レンタルお洋服', price: 0 },
   headdress: { label: 'ヘッドドレスつけ放題', price: 1500 },
-  busy:      { label: '繁忙期（3・4月）', price: 3000 },
+  busy:      { label: '繁忙期シーズン加算', price: 3000 },
   travel:    { label: '出張費用', price: 0 },
 };
 let selectedOptions = new Set();
