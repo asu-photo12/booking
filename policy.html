@@ -108,13 +108,15 @@ body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Helvetica Neue',Ar
 <script>
 function updateAgree() {
   const checked = document.getElementById('policy-agree').checked;
-  document.getElementById('agree-msg').style.display = checked ? 'none' : 'block';
-  document.getElementById('agree-done').style.display = checked ? 'block' : 'none';
+  const msg = document.getElementById('agree-msg');
+  const done = document.getElementById('agree-done');
+  if (msg) msg.style.display = checked ? 'none' : 'block';
+  if (done) done.style.display = checked ? 'block' : 'none';
   if (checked) {
     localStorage.setItem('asuphoto_policy_agreed', '1');
     localStorage.setItem('asuphoto_policy_opened', '1');
     setTimeout(function() {
-      window.location.href = 'index.html';
+      location.href = 'https://asu-photo12.github.io/booking/index.html';
     }, 1000);
   }
 }
