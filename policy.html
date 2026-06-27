@@ -100,7 +100,7 @@ body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Helvetica Neue',Ar
     </label>
     <div id="agree-msg" style="margin-top:1rem;font-size:13px;color:#aaa">チェックを入れると確認完了です</div>
     <div id="agree-done" style="display:none;margin-top:1rem;background:#EAF3DE;border-radius:10px;padding:12px;font-size:14px;color:#27500A;font-weight:500">
-      ご確認ありがとうございます。予約フォームへお進みください。
+      ご確認ありがとうございます。予約フォームに自動で戻ります…
     </div>
   </div>
 </div>
@@ -111,9 +111,11 @@ function updateAgree() {
   document.getElementById('agree-msg').style.display = checked ? 'none' : 'block';
   document.getElementById('agree-done').style.display = checked ? 'block' : 'none';
   if (checked) {
+    localStorage.setItem('asuphoto_policy_agreed', '1');
+    localStorage.setItem('asuphoto_policy_opened', '1');
     setTimeout(function() {
       window.location.href = 'index.html';
-    }, 1500);
+    }, 1000);
   }
 }
 </script>
