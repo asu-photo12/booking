@@ -287,7 +287,7 @@ textarea{resize:vertical;min-height:80px}
       <div class="form-group"><label>電話番号<span class="required">*</span></label><input type="tel" id="f-phone" placeholder="090-0000-0000"></div>
       <div class="form-group"><label>InstagramID<span class="required">*</span></label><input type="text" id="f-instagram" placeholder="@username"></div>
       <div class="form-group full"><label>ご住所（県・市区まで）<span class="required">*</span></label><input type="text" id="f-address" placeholder="例）東京都渋谷区、神奈川県横浜市中区"></div>
-      <div class="form-group full"><label>撮影場所のご希望<span class="required">*</span></label><input type="text" id="f-location" placeholder="屋外・スタジオなど"></div>
+      <div class="form-group full"><label>撮影場所のご希望<span class="required">*</span></label><input type="text" id="f-location" placeholder="神社、自宅、公園など"></div>
       <div class="form-group full"><label>お子様のお名前と年齢<span class="required">*</span><span style="font-size:11px;color:#888;font-weight:400">（複数の場合は改行して入力）</span></label><textarea id="f-children" placeholder="例）山田 太郎（3歳）&#10;山田 花子（1歳）" rows="3"></textarea></div>
       <div class="form-group">
         <label>撮影に参加される人数<span class="required">*</span></label>
@@ -307,6 +307,7 @@ textarea{resize:vertical;min-height:80px}
           <option value="">選択してください</option>
           <option value="全員可能">全員可能</option>
           <option value="子供のみ可">子供のみ可</option>
+          <option value="お子様OK、顔が全部写っていなければご両親も可能（横顔など）">お子様OK、顔が全部写っていなければご両親も可能（横顔など）</option>
           <option value="SNS掲載不可">SNS掲載不可</option>
         </select>
       </div>
@@ -329,6 +330,12 @@ textarea{resize:vertical;min-height:80px}
       <div class="confirm-row"><span class="confirm-label">SNS掲載</span><span id="conf-sns">—</span></div>
       <div class="confirm-row"><span class="confirm-label">オプション</span><span id="conf-options">なし</span></div>
       <div class="confirm-row"><span class="confirm-label">料金</span><span id="conf-price" style="font-weight:500;color:#8B6244">—</span></div>
+    </div>
+    <div style="margin-bottom:1rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
+        <input type="checkbox" id="agree-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
+        <span>撮影のご案内とキャンセル規約を確認し、同意しました。</span>
+      </label>
     </div>
     <button class="submit-btn" id="submit-btn" onclick="submitBooking()">この内容で予約を申し込む</button>
     <p style="font-size:11px;color:#888;margin-top:8px;text-align:center">送信後、確認メールをお送りします。</p>
@@ -673,6 +680,7 @@ async function submitBooking(){
   if(!document.getElementById('f-members').value){showAlert('error','参加人数を選択してください。');return}
   if(!document.getElementById('f-sns').value){showAlert('error','SNS掲載の可否を選択してください。');return}
   if(!document.getElementById('f-note').value.trim()){showAlert('error','ご要望・備考を入力してください。');return}
+  if(!document.getElementById('agree-check').checked){showAlert('error','撮影のご案内とキャンセル規約への同意が必要です。');return}
   const options=[...selectedOptions].map(k=>OPTIONS[k].label).join('、');
   const payload={name,email,phone:document.getElementById('f-phone').value.trim(),instagram:document.getElementById('f-instagram').value.trim(),options,date:selectedDate,time:selectedTime,plan:selectedPlanName,location:document.getElementById('f-location').value.trim(),address:document.getElementById('f-address').value.trim(),children:document.getElementById('f-children').value.trim(),members:document.getElementById('f-members').value,sns:document.getElementById('f-sns').value,note:document.getElementById('f-note').value.trim()};
   const btn=document.getElementById('submit-btn');
