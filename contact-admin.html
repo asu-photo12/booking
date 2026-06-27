@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>asuphoto — お問合せ管理</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f5f4f0;color:#1a1a1a;font-size:14px}
+.header{background:#8B6244;color:#fff;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:500}
+.container{max-width:900px;margin:0 auto;padding:1.5rem 1rem}
+.card{background:#fff;border-radius:12px;border:0.5px solid #e0deda;padding:1.5rem;margin-bottom:1rem}
+.card h2{font-size:15px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.card h2::before{content:'';display:block;width:4px;height:16px;background:#8B6244;border-radius:2px}
+.btn{padding:8px 16px;border-radius:8px;border:0.5px solid #ddd;background:#fff;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
+.btn:hover{border-color:#8B6244;color:#8B6244}
+.btn-p{background:#8B6244;color:#fff;border-color:#8B6244}
+.btn-p:hover{background:#6B5247;color:#fff}
+.alert{border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:10px}
+.alert-success{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.alert-error{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595}
+.alert-loading{background:#F5EDE8;color:#6B5247;border:0.5px solid #C4A882}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.stat{background:#f5f4f0;border-radius:8px;padding:10px 12px}
+.stat-l{font-size:11px;color:#888}
+.stat-v{font-size:20px;font-weight:500;margin-top:2px}
+.filter-btns{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.contact-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:0.5px solid #e0deda;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:background .1s}
+.contact-row:hover{background:#faf8f6}
+.av{width:34px;height:34px;border-radius:50%;background:#F5EDE8;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#8B6244;flex-shrink:0}
+.contact-info{flex:1;min-width:0}
+.contact-name{font-size:13px;font-weight:500}
+.contact-meta{font-size:11px;color:#888;margin-top:1px}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:500}
+.b-new{background:#FCEBEB;color:#A32D2D}
+.b-done{background:#EAF3DE;color:#27500A}
+.b-progress{background:#F5EDE8;color:#8B6244}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:0.5px solid #e0deda}
+.modal-header h3{font-size:16px;font-weight:500}
+.modal-close{width:30px;height:30px;border:none;background:#f5f4f0;border-radius:50%;cursor:pointer;font-size:16px}
+.modal-body{padding:1.25rem 1.5rem}
+.detail-row{display:flex;gap:8px;padding:8px 0;border-bottom:0.5px solid #f5f4f0;font-size:13px}
+.detail-row:last-child{border-bottom:none}
+.detail-label{color:#888;min-width:100px;flex-shrink:0;font-weight:500}
+.detail-value{color:#1a1a1a;flex:1;word-break:break-all;white-space:pre-wrap}
+.modal-footer{padding:1rem 1.5rem;border-top:0.5px solid #e0deda;display:flex;gap:8px;justify-content:flex-end}
+.loading{text-align:center;padding:2rem;font-size:13px;color:#888}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>asuphoto — お問合せ管理</h1>
+</div>
+<div class="container">
+  <div id="global-alert" style="display:none" class="alert"></div>
+
+  <div class="stat-row">
+    <div class="stat"><div class="stat-l">総お問合せ数</div><div class="stat-v" id="st-total">—</div></div>
+    <div class="stat"><div class="stat-l">未対応</div><div class="stat-v" id="st-new" style="color:#A32D2D">—</div></div>
+    <div class="stat"><div class="stat-l">対応済み</div><div class="stat-v" id="st-done" style="color:#27500A">—</div></div>
+  </div>
+
+  <div class="card">
+    <h2>お問合せ一覧</h2>
+    <div id="list-alert" style="display:none" class="alert"></div>
+    <div class="filter-btns">
+      <button class="btn" style="border-color:#8B6244;color:#8B6244" onclick="filterContacts('all',this)">すべて</button>
+      <button class="btn" onclick="filterContacts('未対応',this)">未対応</button>
+      <button class="btn" onclick="filterContacts('対応中',this)">対応中</button>
+      <button class="btn" onclick="filterContacts('対応済み',this)">対応済み</button>
+    </div>
+    <div id="contact-list"><div class="loading">読み込み中...</div></div>
+  </div>
+</div>
+
+<!-- 詳細モーダル -->
+<div class="modal-overlay" id="detail-modal" style="display:none" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">お問合せ詳細</h3>
+      <button class="modal-close" onclick="document.getElementById('detail-modal').style.display='none'">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <select id="modal-status-select" onchange="changeContactStatus()" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;font-family:inherit;background:#fff">
+        <option value="">ステータス変更</option>
+        <option value="未対応">未対応</option>
+        <option value="対応中">対応中</option>
+        <option value="対応済み">対応済み</option>
+      </select>
+      <button class="btn" onclick="document.getElementById('detail-modal').style.display='none'">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxV03iKnfqUEmQzqa_xkAhBNNYxsvyT-wtkM_6pG6HDPk6xbq2Uo3f7Np4olgm2QoT1Zw/exec';
+let allContacts = [];
+let currentFilter = 'all';
+let currentContactId = null;
+
+function loadContacts() {
+  const cb = 'contactsCb_' + Date.now();
+  window[cb] = function(json) {
+    if (json.status === 'ok') allContacts = json.contacts || [];
+    renderContacts(currentFilter);
+    updateStats();
+    delete window[cb];
+    const s = document.getElementById(cb); if(s) s.remove();
+  };
+  const script = document.createElement('script');
+  script.id = cb;
+  script.src = APPS_SCRIPT_URL + '?action=contacts&callback=' + cb + '&t=' + Date.now();
+  script.onerror = function() {
+    renderContacts(currentFilter);
+    delete window[cb]; script.remove();
+  };
+  document.head.appendChild(script);
+}
+
+function getStatusBadge(status) {
+  if (status === '対応済み') return '<span class="badge b-done">対応済み</span>';
+  if (status === '対応中') return '<span class="badge b-progress">対応中</span>';
+  return '<span class="badge b-new">未対応</span>';
+}
+
+function renderContacts(filter) {
+  const items = filter === 'all' ? allContacts : allContacts.filter(c => c.status === filter);
+  const list = document.getElementById('contact-list');
+  if (items.length === 0) {
+    list.innerHTML = '<p style="color:#888;font-size:13px">お問合せがありません</p>';
+    return;
+  }
+  list.innerHTML = items.map(c => `
+    <div class="contact-row" onclick="showDetail(${c.id})">
+      <div class="av">${c.name ? c.name[0] : '?'}</div>
+      <div class="contact-info">
+        <div class="contact-name">${c.name}</div>
+        <div class="contact-meta">${c.createdAt} · ${c.instagram}</div>
+      </div>
+      ${getStatusBadge(c.status)}
+    </div>`).join('');
+}
+
+function filterContacts(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btns .btn').forEach(b => { b.style.borderColor=''; b.style.color=''; });
+  btn.style.borderColor = '#8B6244'; btn.style.color = '#8B6244';
+  renderContacts(filter);
+}
+
+function updateStats() {
+  document.getElementById('st-total').textContent = allContacts.length;
+  document.getElementById('st-new').textContent = allContacts.filter(c => c.status === '未対応').length;
+  document.getElementById('st-done').textContent = allContacts.filter(c => c.status === '対応済み').length;
+}
+
+function showDetail(rowId) {
+  const c = allContacts.find(c => c.id === rowId);
+  if (!c) return;
+  currentContactId = rowId;
+  document.getElementById('modal-title').textContent = c.name + ' 様のお問合せ';
+  document.getElementById('modal-status-select').value = '';
+  const fields = [
+    ['受付日時', c.createdAt],
+    ['ステータス', c.status],
+    ['お名前', c.name],
+    ['Instagram', c.instagram],
+    ['メール', c.email],
+    ['希望場所', c.location],
+    ['お問合せ内容', c.message],
+  ];
+  document.getElementById('modal-body').innerHTML = fields
+    .filter(([,v]) => v)
+    .map(([label, value]) => `
+      <div class="detail-row">
+        <span class="detail-label">${label}</span>
+        <span class="detail-value">${value}</span>
+      </div>`).join('');
+  document.getElementById('detail-modal').style.display = 'flex';
+}
+
+async function changeContactStatus() {
+  const status = document.getElementById('modal-status-select').value;
+  if (!status || !currentContactId) return;
+  try {
+    const fd = new FormData();
+    fd.append('payload', JSON.stringify({ action: 'updateContactStatus', rowId: currentContactId, status }));
+    await fetch(APPS_SCRIPT_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+    const c = allContacts.find(c => c.id === currentContactId);
+    if (c) c.status = status;
+    renderContacts(currentFilter);
+    updateStats();
+    document.getElementById('detail-modal').style.display = 'none';
+    showAlert('global-alert', 'success', '「' + status + '」に変更しました');
+  } catch(e) {
+    showAlert('global-alert', 'error', '更新に失敗しました。');
+  }
+}
+
+function closeModal(e) {
+  if (e.target.id === 'detail-modal') document.getElementById('detail-modal').style.display = 'none';
+}
+
+function showAlert(id, type, msg) {
+  const el = document.getElementById(id); if (!el) return;
+  el.className = 'alert alert-' + type; el.textContent = msg; el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+loadContacts();
+</script>
+</body>
+</html>
