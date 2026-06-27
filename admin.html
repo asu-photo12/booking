@@ -103,6 +103,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
     <button class="tab-btn" onclick="showTab('plans',this)">プラン設定</button>
     <button class="tab-btn" onclick="showTab('email',this)">メール文面</button>
     <button class="tab-btn" onclick="showTab('site',this)">サイト設定</button>
+    <button class="tab-btn" onclick="showTab('contacts',this)">お問合せ</button>
   </div>
 
   <!-- ダッシュボード -->
@@ -343,10 +344,67 @@ e.asut1207@gmail.com</textarea></div>
         <button class="btn" onclick="previewEmail()" style="margin-bottom:8px">プレビューを表示</button>
         <div id="email-preview" style="display:none;background:#f5f4f0;border-radius:10px;padding:1rem;font-size:13px;line-height:1.8;white-space:pre-wrap;color:#333"></div>
       </div>
+      <div style="border:0.5px solid #e0deda;border-radius:10px;overflow:hidden;margin-bottom:1rem">
+        <div style="background:#f5f4f0;padding:10px 14px;font-size:13px;font-weight:500;border-bottom:0.5px solid #e0deda">お問合せ自動返信メール（お客様へ）</div>
+        <div style="padding:1rem">
+          <div class="fg"><label>件名</label><input type="text" id="mail-subject-contact" value="【受付完了】お問合せありがとうございます — asuphoto"></div>
+          <div class="fg"><label>本文</label><textarea id="mail-body-contact" rows="10" style="width:100%;padding:8px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;font-family:inherit;resize:vertical">{{名前}} 様
+
+お問合せを受け付けました。
+後ほど、eriよりご連絡させていただきます。
+よろしくお願いいたします。
+
+3日以上経っても連絡がない場合は、お手数ですが公式LINEよりご連絡ください。
+
+asuphoto
+e.asut1207@gmail.com</textarea></div>
+        </div>
+      </div>
+
       <button class="btn btn-p" onclick="saveEmailTemplates()">文面を保存する</button>
     </div>
   </div>
 
+</div>
+
+  <!-- お問合せ管理 -->
+  <div id="tab-contacts" class="tab-content">
+    <div class="card">
+      <h2>お問合せ一覧</h2>
+      <div id="contact-alert" style="display:none" class="alert"></div>
+      <div class="stat-row" style="margin-bottom:1rem">
+        <div class="stat"><div class="stat-l">総数</div><div class="stat-v" id="cst-total">—</div></div>
+        <div class="stat"><div class="stat-l">未対応</div><div class="stat-v" id="cst-new" style="color:#A32D2D">—</div></div>
+        <div class="stat"><div class="stat-l">対応済み</div><div class="stat-v" id="cst-done" style="color:#27500A">—</div></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap">
+        <button class="btn" style="border-color:#534AB7;color:#534AB7" onclick="filterC('all',this)">すべて</button>
+        <button class="btn" onclick="filterC('未対応',this)">未対応</button>
+        <button class="btn" onclick="filterC('対応中',this)">対応中</button>
+        <button class="btn" onclick="filterC('対応済み',this)">対応済み</button>
+      </div>
+      <div id="contact-list"><p style="color:#888;font-size:13px">読み込み中...</p></div>
+    </div>
+  </div>
+
+<!-- お問合せ詳細モーダル -->
+<div class="modal-overlay" id="contact-modal" style="display:none" onclick="closeContactModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="contact-modal-title">お問合せ詳細</h3>
+      <button class="modal-close" onclick="document.getElementById('contact-modal').style.display='none'">×</button>
+    </div>
+    <div class="modal-body" id="contact-modal-body"></div>
+    <div class="modal-footer">
+      <select id="contact-status-select" onchange="changeContactStatus()" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;font-family:inherit;background:#fff">
+        <option value="">ステータス変更</option>
+        <option value="未対応">未対応</option>
+        <option value="対応中">対応中</option>
+        <option value="対応済み">対応済み</option>
+      </select>
+      <button class="btn" onclick="document.getElementById('contact-modal').style.display='none'">閉じる</button>
+    </div>
+  </div>
 </div>
 
 <!-- 詳細モーダル -->
@@ -441,6 +499,7 @@ function showTab(id, btn) {
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
   if (id==='bookings') loadBookings();
+  if (id==='contacts') loadContacts();
   if (id==='dashboard') { loadBookings(); loadAvailability(); }
   if (id==='calendar') loadAvailability();
 }
@@ -809,9 +868,15 @@ function saveEmailTemplates() {
   const t = {
     subjectConfirm: document.getElementById('mail-subject-confirm').value,
     bodyConfirm: document.getElementById('mail-body-confirm').value,
+    subjectContact: document.getElementById('mail-subject-contact').value,
+    bodyContact: document.getElementById('mail-body-contact').value,
   };
   localStorage.setItem('asuphoto_email_templates', JSON.stringify(t));
-  showAlert('email-alert', 'success', '保存しました！次回の予約から反映されます。');
+  // Apps Scriptにも保存
+  const fd = new FormData();
+  fd.append('payload', JSON.stringify({ action: 'saveEmailTemplates', templates: t }));
+  fetch(APPS_SCRIPT_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+  showAlert('email-alert', 'success', '保存しました！次回のお問合せから反映されます。');
 }
 
 function previewEmail() {
@@ -1145,6 +1210,108 @@ async function changeStatusFromModal() {
   if (!status || !currentBookingId) return;
   await changeStatus(currentBookingId, status);
   document.getElementById('detail-modal').style.display = 'none';
+}
+
+// ===== お問合せ管理 =====
+let allContacts = [];
+let currentContactFilter = 'all';
+let currentContactId = null;
+
+function loadContacts() {
+  const cb = 'contactsCb_' + Date.now();
+  window[cb] = function(json) {
+    if (json.status === 'ok') allContacts = json.contacts || [];
+    renderContacts(currentContactFilter);
+    updateContactStats();
+    delete window[cb];
+    const s = document.getElementById(cb); if(s) s.remove();
+  };
+  const script = document.createElement('script');
+  script.id = cb;
+  script.src = APPS_SCRIPT_URL + '?action=contacts&callback=' + cb + '&t=' + Date.now();
+  script.onerror = function() {
+    renderContacts(currentContactFilter);
+    delete window[cb]; script.remove();
+  };
+  document.head.appendChild(script);
+}
+
+function getContactBadge(status) {
+  if (status === '対応済み') return '<span class="badge b-ok">対応済み</span>';
+  if (status === '対応中') return '<span class="badge b-pend">対応中</span>';
+  return '<span class="badge b-cancel">未対応</span>';
+}
+
+function renderContacts(filter) {
+  currentContactFilter = filter;
+  const items = filter === 'all' ? allContacts : allContacts.filter(c => c.status === filter);
+  const list = document.getElementById('contact-list');
+  if (!list) return;
+  if (items.length === 0) { list.innerHTML = '<p style="color:#888;font-size:13px">お問合せがありません</p>'; return; }
+  list.innerHTML = items.map(c => `<div class="brow">
+    <div class="av">${c.name ? c.name[0] : '?'}</div>
+    <div class="brow-info">
+      <div class="brow-name" style="cursor:pointer;color:#534AB7;text-decoration:underline" onclick="showContactDetail(${c.id})">${c.name}</div>
+      <div class="brow-meta">${c.createdAt} · ${c.instagram}</div>
+    </div>
+    ${getContactBadge(c.status)}
+    <select onchange="changeContactStatusInline(${c.id},this.value)" style="padding:4px 8px;border-radius:8px;border:0.5px solid #ddd;font-size:12px;font-family:inherit;background:#fff">
+      <option value="">変更</option>
+      <option value="未対応">未対応</option>
+      <option value="対応中">対応中</option>
+      <option value="対応済み">対応済み</option>
+    </select>
+  </div>`).join('');
+}
+
+function filterC(filter, btn) {
+  document.querySelectorAll('#tab-contacts .btn').forEach(b => { b.style.borderColor=''; b.style.color=''; });
+  btn.style.borderColor = '#534AB7'; btn.style.color = '#534AB7';
+  renderContacts(filter);
+}
+
+function updateContactStats() {
+  const t = document.getElementById('cst-total'); if(t) t.textContent = allContacts.length;
+  const n = document.getElementById('cst-new'); if(n) n.textContent = allContacts.filter(c=>c.status==='未対応').length;
+  const d = document.getElementById('cst-done'); if(d) d.textContent = allContacts.filter(c=>c.status==='対応済み').length;
+}
+
+function showContactDetail(rowId) {
+  const c = allContacts.find(c => c.id === rowId);
+  if (!c) return;
+  currentContactId = rowId;
+  document.getElementById('contact-modal-title').textContent = c.name + ' 様のお問合せ';
+  document.getElementById('contact-status-select').value = '';
+  const fields = [['受付日時',c.createdAt],['ステータス',c.status],['お名前',c.name],['Instagram',c.instagram],['メール',c.email],['希望場所',c.location],['お問合せ内容',c.message]];
+  document.getElementById('contact-modal-body').innerHTML = fields
+    .filter(([,v])=>v)
+    .map(([label,value])=>`<div class="detail-row"><span class="detail-label">${label}</span><span class="detail-value" style="white-space:pre-wrap">${value}</span></div>`).join('');
+  document.getElementById('contact-modal').style.display = 'flex';
+}
+
+async function changeContactStatusInline(rowId, status) {
+  if (!status) return;
+  try {
+    const fd = new FormData();
+    fd.append('payload', JSON.stringify({ action:'updateContactStatus', rowId, status }));
+    await fetch(APPS_SCRIPT_URL, { method:'POST', body:fd, mode:'no-cors' });
+    const c = allContacts.find(c => c.id === rowId);
+    if (c) c.status = status;
+    renderContacts(currentContactFilter);
+    updateContactStats();
+    showAlert('contact-alert','success','「'+status+'」に変更しました');
+  } catch(e) { showAlert('contact-alert','error','更新に失敗しました。'); }
+}
+
+async function changeContactStatus() {
+  const status = document.getElementById('contact-status-select').value;
+  if (!status || !currentContactId) return;
+  await changeContactStatusInline(currentContactId, status);
+  document.getElementById('contact-modal').style.display = 'none';
+}
+
+function closeContactModal(e) {
+  if (e.target.id === 'contact-modal') document.getElementById('contact-modal').style.display = 'none';
 }
 
 // ===== 初期化 =====
