@@ -538,7 +538,9 @@ function buildCalendar(){
     const hasPartial=availSlots.length>0&&availSlots.length<12;
 
     if(availSlots.length>0){
-      const sc=document.createElement('span');sc.className='slot-count';sc.textContent=availSlots.length+'枠';el.appendChild(sc);
+      const sc=document.createElement('span');sc.className='slot-count';
+      sc.textContent=availSlots.length>=4?'○':'△';
+      el.appendChild(sc);
     }
 
     if(isPast){el.className='cal-cell past';}
