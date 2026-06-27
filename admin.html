@@ -42,7 +42,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
 .cal-cell.booked{background:#FAEEDA;color:#633806}
 .cal-cell.selected{background:#534AB7;color:#fff;font-weight:500}
 .cal-cell.closed{background:#FCEBEB;color:#A32D2D;cursor:pointer}
-.cal-cell .slot-count{font-size:9px;opacity:.8}
+.cal-cell .slot-count{font-size:11px;font-weight:500}
 .legend{display:flex;gap:12px;margin:8px 0;flex-wrap:wrap}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#666}
 .legend-dot{width:9px;height:9px;border-radius:50%}
@@ -144,6 +144,8 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
         <div class="time-slots" id="time-slots"></div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-p" onclick="setAllSlots('available')">全時間を空きに</button>
+          <button class="btn" onclick="setMorningSlots('available')">午前のみ空きに</button>
+          <button class="btn" onclick="setAfternoonSlots('available')">午後のみ空きに</button>
           <button class="btn" onclick="setAllSlots('booked')">全時間を予約済みに</button>
           <button class="btn" style="background:#FCEBEB;color:#A32D2D;border-color:#F09595" onclick="setAllSlots('closed')">全時間を空きなしに</button>
           <button class="btn" onclick="setAllSlots('none')">全時間をクリア</button>
@@ -578,7 +580,10 @@ function getSlotCount(key) {
   const val=calStatus[key];
   if(!val||typeof val==='string') return '';
   const avail=Object.values(val).filter(s=>s==='available').length;
-  return avail>0?avail+'枠':'';
+  const total=Object.values(val).filter(s=>s==='available'||s==='booked').length;
+  if(avail===0) return '';
+  if(avail>=4) return '○';
+  return '△';
 }
 
 function buildCal() {
@@ -660,6 +665,28 @@ function setAllSlots(status) {
     calStatus[selectedDay]={};
     HOURS.forEach(h=>{calStatus[selectedDay][h]=status;});
   }
+  buildCal();
+  showTimePanel(selectedDay);
+}
+
+function setMorningSlots(status) {
+  if(!selectedDay) return;
+  if(!calStatus[selectedDay]||typeof calStatus[selectedDay]==='string') calStatus[selectedDay]={};
+  HOURS.forEach(h=>{
+    const hour = parseInt(h.split(':')[0]);
+    if(hour < 13) calStatus[selectedDay][h]=status;
+  });
+  buildCal();
+  showTimePanel(selectedDay);
+}
+
+function setAfternoonSlots(status) {
+  if(!selectedDay) return;
+  if(!calStatus[selectedDay]||typeof calStatus[selectedDay]==='string') calStatus[selectedDay]={};
+  HOURS.forEach(h=>{
+    const hour = parseInt(h.split(':')[0]);
+    if(hour >= 13) calStatus[selectedDay][h]=status;
+  });
   buildCal();
   showTimePanel(selectedDay);
 }
