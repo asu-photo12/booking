@@ -337,6 +337,12 @@ textarea{resize:vertical;min-height:80px}
         <span>撮影のご案内とキャンセル規約を確認し、同意しました。</span>
       </label>
     </div>
+    <div style="margin-bottom:1.5rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
+        <input type="checkbox" id="confirm-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
+        <span>こちらの入力内容を確認した後、eriより再度連絡させていただき予約確定となります。</span>
+      </label>
+    </div>
     <button class="submit-btn" id="submit-btn" onclick="submitBooking()">この内容で予約を申し込む</button>
     <p style="font-size:11px;color:#888;margin-top:8px;text-align:center">送信後、確認メールをお送りします。</p>
     <div id="after-submit-msg" style="display:none;margin-top:1.5rem;background:#F5EDE8;border-radius:12px;padding:1.25rem;text-align:center;line-height:1.9">
@@ -681,6 +687,7 @@ async function submitBooking(){
   if(!document.getElementById('f-sns').value){showAlert('error','SNS掲載の可否を選択してください。');return}
   if(!document.getElementById('f-note').value.trim()){showAlert('error','ご要望・備考を入力してください。');return}
   if(!document.getElementById('agree-check').checked){showAlert('error','撮影のご案内とキャンセル規約への同意が必要です。');return}
+  if(!document.getElementById('confirm-check').checked){showAlert('error','eriからの確認連絡についての了承が必要です。');return}
   const options=[...selectedOptions].map(k=>OPTIONS[k].label).join('、');
   const payload={name,email,phone:document.getElementById('f-phone').value.trim(),instagram:document.getElementById('f-instagram').value.trim(),options,date:selectedDate,time:selectedTime,plan:selectedPlanName,location:document.getElementById('f-location').value.trim(),address:document.getElementById('f-address').value.trim(),children:document.getElementById('f-children').value.trim(),members:document.getElementById('f-members').value,sns:document.getElementById('f-sns').value,note:document.getElementById('f-note').value.trim()};
   const btn=document.getElementById('submit-btn');
