@@ -20,7 +20,9 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#F
 .plan-content{display:none}
 .plan-content.active{display:block}
 .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.plan-card{border:0.5px solid #E8DDD7;border-radius:10px;padding:12px;background:#FAF6F3}
+.plan-card{border:0.5px solid #E8DDD7;border-radius:10px;padding:12px;background:#FAF6F3;cursor:pointer;transition:border-color .15s}
+.plan-card:hover{border-color:#8B6244}
+.plan-card.selected{border:2px solid #8B6244;background:#F5EDE8}
 .scene-badge{display:inline-block;background:#F5EDE8;color:#8B6244;font-size:11px;padding:2px 8px;border-radius:20px;margin-bottom:6px;font-weight:500}
 .plan-name{font-size:13px;font-weight:500;margin-bottom:4px}
 .plan-price{font-size:17px;font-weight:500;color:#8B6244;margin-bottom:4px}
@@ -79,23 +81,23 @@ textarea{resize:vertical;min-height:100px}
     </div>
     <div class="plan-content active" id="pc-family">
       <div class="plans">
-        <div class="plan-card"><div class="scene-badge">家族写真</div><div class="plan-name">Mini Plan</div><div class="plan-price">¥17,000</div><div class="plan-desc">撮影を試してみたい方や短時間で撮りたい方</div><div class="plan-features">撮影時間 40分前後<br>データ納品 15cut</div></div>
-        <div class="plan-card"><div class="scene-badge">家族写真</div><div class="plan-name">Standard Plan</div><div class="plan-price">¥20,000</div><div class="plan-desc">ご家族の大事なイベントや思い出をしっかり残したい方</div><div class="plan-features">撮影時間 1時間前後<br>データ納品 40cut</div></div>
-        <div class="plan-card"><div class="scene-badge">家族写真</div><div class="plan-name">Premium Plan</div><div class="plan-price">¥26,000</div><div class="plan-desc">少しの表情の変化も全て残したい方向け</div><div class="plan-features">撮影時間 1時間半前後<br>データ納品 80cut</div></div>
+        <div class="plan-card" id="pc-family-mini" onclick="selectPlanCard('family-mini','家族写真 Mini Plan')"><div class="scene-badge">家族写真</div><div class="plan-name">Mini Plan</div><div class="plan-price">¥17,000</div><div class="plan-desc">撮影を試してみたい方や短時間で撮りたい方</div><div class="plan-features">撮影時間 40分前後<br>データ納品 15cut</div></div>
+        <div class="plan-card" id="pc-family-standard" onclick="selectPlanCard('family-standard','家族写真 Standard Plan')"><div class="scene-badge">家族写真</div><div class="plan-name">Standard Plan</div><div class="plan-price">¥20,000</div><div class="plan-desc">ご家族の大事なイベントや思い出をしっかり残したい方</div><div class="plan-features">撮影時間 1時間前後<br>データ納品 40cut</div></div>
+        <div class="plan-card" id="pc-family-premium" onclick="selectPlanCard('family-premium','家族写真 Premium Plan')"><div class="scene-badge">家族写真</div><div class="plan-name">Premium Plan</div><div class="plan-price">¥26,000</div><div class="plan-desc">少しの表情の変化も全て残したい方向け</div><div class="plan-features">撮影時間 1時間半前後<br>データ納品 80cut</div></div>
       </div>
     </div>
     <div class="plan-content" id="pc-753">
       <div class="plans">
-        <div class="plan-card"><div class="scene-badge">七五三</div><div class="plan-name">Mini Plan</div><div class="plan-price">¥22,000</div><div class="plan-desc">定番ショットのみを短時間で残したい方</div><div class="plan-features">撮影時間 40分前後<br>データ納品 30cut</div></div>
-        <div class="plan-card"><div class="scene-badge">七五三</div><div class="plan-name">Standard Plan</div><div class="plan-price">¥26,000</div><div class="plan-desc">ハレの日の記録をしっかり残したい方</div><div class="plan-features">撮影時間 1時間前後<br>データ納品 70cut</div></div>
-        <div class="plan-card"><div class="scene-badge">七五三</div><div class="plan-name">Premium Plan</div><div class="plan-price">¥32,000</div><div class="plan-desc">主役のお子様が複数いらっしゃる方</div><div class="plan-features">撮影時間 1時間30分前後<br>データ納品 100cut</div></div>
+        <div class="plan-card" id="pc-753-mini" onclick="selectPlanCard('753-mini','七五三 Mini Plan')"><div class="scene-badge">七五三</div><div class="plan-name">Mini Plan</div><div class="plan-price">¥22,000</div><div class="plan-desc">定番ショットのみを短時間で残したい方</div><div class="plan-features">撮影時間 40分前後<br>データ納品 30cut</div></div>
+        <div class="plan-card" id="pc-753-standard" onclick="selectPlanCard('753-standard','七五三 Standard Plan')"><div class="scene-badge">七五三</div><div class="plan-name">Standard Plan</div><div class="plan-price">¥26,000</div><div class="plan-desc">ハレの日の記録をしっかり残したい方</div><div class="plan-features">撮影時間 1時間前後<br>データ納品 70cut</div></div>
+        <div class="plan-card" id="pc-753-premium" onclick="selectPlanCard('753-premium','七五三 Premium Plan')"><div class="scene-badge">七五三</div><div class="plan-name">Premium Plan</div><div class="plan-price">¥32,000</div><div class="plan-desc">主役のお子様が複数いらっしゃる方</div><div class="plan-features">撮影時間 1時間30分前後<br>データ納品 100cut</div></div>
       </div>
     </div>
     <div class="plan-content" id="pc-omi">
       <div class="plans">
-        <div class="plan-card"><div class="scene-badge">お宮参り</div><div class="plan-name">Mini Plan</div><div class="plan-price">¥20,000</div><div class="plan-desc">定番ショットのみを短時間で残したい方</div><div class="plan-features">撮影時間 40分前後<br>データ納品 30cut</div></div>
-        <div class="plan-card"><div class="scene-badge">お宮参り</div><div class="plan-name">Standard Plan</div><div class="plan-price">¥22,000</div><div class="plan-desc">ハレの日の記録をしっかり残したい方</div><div class="plan-features">撮影時間 1時間前後<br>データ納品 50cut</div></div>
-        <div class="plan-card"><div class="scene-badge">お宮参り</div><div class="plan-name">Premium Plan</div><div class="plan-price">¥30,000</div><div class="plan-desc">主役のお子様が複数いらっしゃる方</div><div class="plan-features">撮影時間 1時間30分前後<br>データ納品 100cut</div></div>
+        <div class="plan-card" id="pc-omi-mini" onclick="selectPlanCard('omi-mini','お宮参り Mini Plan')"><div class="scene-badge">お宮参り</div><div class="plan-name">Mini Plan</div><div class="plan-price">¥20,000</div><div class="plan-desc">定番ショットのみを短時間で残したい方</div><div class="plan-features">撮影時間 40分前後<br>データ納品 30cut</div></div>
+        <div class="plan-card" id="pc-omi-standard" onclick="selectPlanCard('omi-standard','お宮参り Standard Plan')"><div class="scene-badge">お宮参り</div><div class="plan-name">Standard Plan</div><div class="plan-price">¥22,000</div><div class="plan-desc">ハレの日の記録をしっかり残したい方</div><div class="plan-features">撮影時間 1時間前後<br>データ納品 50cut</div></div>
+        <div class="plan-card" id="pc-omi-premium" onclick="selectPlanCard('omi-premium','お宮参り Premium Plan')"><div class="scene-badge">お宮参り</div><div class="plan-name">Premium Plan</div><div class="plan-price">¥30,000</div><div class="plan-desc">主役のお子様が複数いらっしゃる方</div><div class="plan-features">撮影時間 1時間30分前後<br>データ納品 100cut</div></div>
       </div>
     </div>
   </div>
@@ -110,6 +112,11 @@ textarea{resize:vertical;min-height:100px}
       <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:0.5px solid #F0EBE7"><span>繁忙期シーズン加算（3・4月 平日・休日ともに適用）</span><span style="color:#8B6244;font-weight:500;margin-left:1rem">+¥3,000</span></div>
       <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0"><span>出張費用（埼玉県北部の自宅からの距離に応じて）</span><span style="color:#8B6244;font-weight:500;margin-left:1rem">別途相談</span></div>
     </div>
+  </div>
+
+  <!-- 選択中プラン表示 -->
+  <div id="selected-plan-display" style="display:none;background:#F5EDE8;border-radius:10px;padding:12px 14px;margin-bottom:1.25rem;font-size:13px;color:#8B6244;font-weight:500;border:0.5px solid #E8DDD7">
+    選択中のプラン：<span id="selected-plan-name"></span>
   </div>
 
   <!-- カレンダー -->
@@ -149,6 +156,10 @@ textarea{resize:vertical;min-height:100px}
       <input type="email" id="c-email" placeholder="hanako@example.com">
     </div>
     <div class="form-group">
+      <label>希望撮影場所</label>
+      <input type="text" id="c-location" placeholder="神社、自宅、公園など">
+    </div>
+    <div class="form-group">
       <label>お問合せ内容</label>
       <textarea id="c-message" placeholder="撮影についてのご質問・ご相談をご記入ください"></textarea>
     </div>
@@ -160,7 +171,7 @@ textarea{resize:vertical;min-height:100px}
 <div class="thanks-overlay" id="thanks-overlay" style="display:none" onclick="closeModal(event)">
   <div class="thanks-modal">
     <p style="font-size:20px;font-weight:500;color:#3D2B1F;margin-bottom:10px">お問合せありがとうございます。</p>
-    <p style="font-size:13px;color:#888;margin-bottom:1.5rem">内容を確認後、eriよりご連絡させていただきます。</p>
+    <p style="font-size:13px;color:#888;margin-bottom:1.5rem">後ほど、eriよりご連絡させていただきます。<br>よろしくお願いいたします。</p>
     <button onclick="document.getElementById('thanks-overlay').style.display='none'" style="width:100%;padding:11px;background:#8B6244;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit">閉じる</button>
   </div>
 </div>
@@ -271,7 +282,7 @@ async function submitContact(){
   showAlert('loading','送信しています...');
   try{
     const fd=new FormData();
-    fd.append('payload',JSON.stringify({action:'contact',name,instagram,email,message}));
+    fd.append('payload',JSON.stringify({action:'contact',name,instagram,email,message,location:document.getElementById('c-location').value.trim()}));
     await fetch(APPS_SCRIPT_URL,{method:'POST',body:fd,mode:'no-cors'});
     document.getElementById('alert-box').classList.add('hidden');
     document.getElementById('thanks-overlay').style.display='flex';
@@ -292,6 +303,23 @@ function closeModal(e){
 }
 
 fetchAvailability();
+
+let currentPlanId = '';
+function selectPlanCard(pid, name) {
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  const el = document.getElementById('pc-' + pid);
+  if (el) el.classList.add('selected');
+  currentPlanId = pid;
+  // 表示エリアを更新
+  document.getElementById('selected-plan-name').textContent = name;
+  document.getElementById('selected-plan-display').style.display = 'block';
+  // お問合せ内容に反映
+  const msg = document.getElementById('c-message');
+  if (msg) {
+    const lines = msg.value.split('\n').filter(l => l.indexOf('希望プラン:') !== 0);
+    msg.value = '希望プラン: ' + name + '\n' + lines.join('\n');
+  }
+}
 </script>
 </body>
 </html>
