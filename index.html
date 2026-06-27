@@ -342,9 +342,10 @@ textarea{resize:vertical;min-height:80px}
     <div style="margin-bottom:1rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
       <p style="font-size:12px;color:#888;margin-bottom:8px">まず下のリンクから規約をご確認ください</p>
       <a href="policy.html" target="_blank" id="policy-link" onclick="markPolicyOpened()" style="display:inline-block;margin-bottom:10px;color:#8B6244;font-size:13px;font-weight:500;text-decoration:underline">撮影のご案内・規約を確認する</a>
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:not-allowed;font-size:13px;color:#3D2B1F;font-weight:400" id="agree-label">
-        <input type="checkbox" id="agree-check" disabled style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:not-allowed;opacity:.4">
-        <span id="agree-text" style="color:#aaa">撮影のご案内とキャンセル規約を確認し、同意しました。<br><span style="font-size:11px">（先に規約をご確認ください）</span></span>
+      <p id="policy-notice" style="font-size:11px;color:#A32D2D;margin-bottom:6px;display:none">リンクから規約をご確認後にチェックできます</p>
+      <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#3D2B1F;font-weight:400" id="agree-label">
+        <input type="checkbox" id="agree-check" disabled style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;opacity:.4" onclick="checkPolicyFirst(event)">
+        <span id="agree-text" style="color:#aaa">撮影のご案内とキャンセル規約を確認し、同意しました。<br><span style="font-size:11px">（先に上のリンクから規約をご確認ください）</span></span>
       </label>
     </div>
     <div style="margin-bottom:1.5rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
@@ -749,6 +750,13 @@ restoreFormData();
 // ===== 入力内容の自動保存・復元 =====
 const FORM_FIELDS = ['f-name','f-email','f-phone','f-instagram','f-address','f-zip','f-children','f-note'];
 const SELECT_FIELDS = ['f-members','f-sns'];
+
+function checkPolicyFirst(e) {
+  if (!localStorage.getItem('asuphoto_policy_opened')) {
+    e.preventDefault();
+    document.getElementById('policy-notice').style.display = 'block';
+  }
+}
 
 function markPolicyOpened() {
   localStorage.setItem('asuphoto_policy_opened', '1');
