@@ -342,7 +342,7 @@ textarea{resize:vertical;min-height:80px}
     <div style="margin-bottom:1rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
       <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
         <input type="checkbox" id="agree-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
-        <span>撮影のご案内とキャンセル規約を確認し、同意しました。</span>
+        <span>撮影のご案内とキャンセル規約を確認し、同意しました。（<a href="policy.html" target="_blank" style="color:#8B6244;text-decoration:underline">ご案内・規約を確認する</a>）</span>
       </label>
     </div>
     <div style="margin-bottom:1.5rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
@@ -618,6 +618,7 @@ function selectTime(hour,el) {
   document.querySelectorAll('#time-slots-customer .time-slot').forEach(s=>s.classList.remove('selected'));
   el.classList.add('selected');
   updateConfirm();
+  saveFormData();
   document.getElementById('selected-datetime-display').textContent=`選択中: ${selectedDate} ${selectedTime}〜`;
 }
 
@@ -741,6 +742,68 @@ function showAlert(type,msg){const el=document.getElementById('alert-box');el.cl
 updateConfirm();
 fetchAvailability();
 loadHeaderImage();
+restoreFormData();
+
+// ===== 入力内容の自動保存・復元 =====
+const FORM_FIELDS = ['f-name','f-email','f-phone','f-instagram','f-address','f-zip','f-children','f-note'];
+const SELECT_FIELDS = ['f-members','f-sns'];
+
+function saveFormData() {
+  const data = {};
+  FORM_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+  SELECT_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+  if (selectedDate) data['selectedDate'] = selectedDate;
+  if (selectedTime) data['selectedTime'] = selectedTime;
+  if (selectedPlanName) data['selectedPlanName'] = selectedPlanName;
+  if (selectedPlanPrice) data['selectedPlanPrice'] = selectedPlanPrice;
+  localStorage.setItem('asuphoto_form_data', JSON.stringify(data));
+}
+
+function restoreFormData() {
+  const saved = localStorage.getItem('asuphoto_form_data');
+  if (!saved) return;
+  try {
+    const data = JSON.parse(saved);
+    FORM_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && data[id]) el.value = data[id];
+    });
+    SELECT_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && data[id]) el.value = data[id];
+    });
+    if (data.selectedDate) { selectedDate = data.selectedDate; }
+    if (data.selectedTime) { selectedTime = data.selectedTime; }
+    if (data.selectedPlanName && data.selectedPlanPrice) {
+      selectedPlanName = data.selectedPlanName;
+      selectedPlanPrice = data.selectedPlanPrice;
+    }
+    // policy同意済みならチェックを入れる
+    if (localStorage.getItem('asuphoto_policy_agreed') === '1') {
+      const agreeEl = document.getElementById('agree-check');
+      if (agreeEl) agreeEl.checked = true;
+      const confirmEl = document.getElementById('confirm-check');
+      if (confirmEl) confirmEl.checked = true;
+    }
+    updateConfirm();
+  } catch(e) {}
+}
+
+// 入力のたびに自動保存
+FORM_FIELDS.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', saveFormData);
+});
+SELECT_FIELDS.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', saveFormData);
+});
 </script>
 <div class="thanks-overlay" id="thanks-overlay" style="display:none" onclick="closeThanks(event)">
   <div class="thanks-modal">
