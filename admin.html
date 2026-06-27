@@ -41,6 +41,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
 .cal-cell.partial{background:#D4EDFF;color:#0C447C}
 .cal-cell.booked{background:#FAEEDA;color:#633806}
 .cal-cell.selected{background:#534AB7;color:#fff;font-weight:500}
+.cal-cell.closed{background:#FCEBEB;color:#A32D2D;cursor:pointer}
 .cal-cell .slot-count{font-size:9px;opacity:.8}
 .legend{display:flex;gap:12px;margin:8px 0;flex-wrap:wrap}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#666}
@@ -132,6 +133,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
         <div class="legend-item"><div class="legend-dot" style="background:#97C459"></div>全時間空き</div>
         <div class="legend-item"><div class="legend-dot" style="background:#5BAEE0"></div>一部空き</div>
         <div class="legend-item"><div class="legend-dot" style="background:#EF9F27"></div>予約済み</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F09595"></div>空きなし</div>
         <div class="legend-item"><div class="legend-dot" style="background:#534AB7"></div>選択中</div>
       </div>
       <p style="font-size:12px;color:#888;margin-top:8px">日付をクリックして時間帯を設定してください</p>
@@ -143,6 +145,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-p" onclick="setAllSlots('available')">全時間を空きに</button>
           <button class="btn" onclick="setAllSlots('booked')">全時間を予約済みに</button>
+          <button class="btn" style="background:#FCEBEB;color:#A32D2D;border-color:#F09595" onclick="setAllSlots('closed')">全時間を空きなしに</button>
           <button class="btn" onclick="setAllSlots('none')">全時間をクリア</button>
         </div>
       </div>
@@ -171,7 +174,6 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
 
   <!-- プラン設定 -->
   <div id="tab-plans" class="tab-content">
-    <div style="display:grid;grid-template-columns:1fr 360px;gap:1rem;align-items:start">
     <div class="card">
       <h2>料金プランを編集する</h2>
       <div id="plan-alert" style="display:none" class="alert"></div>
@@ -303,18 +305,6 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- プレビュー -->
-    <div class="card" style="position:sticky;top:1rem">
-      <h2>プレビュー</h2>
-      <div style="display:flex;gap:4px;margin-bottom:1rem;background:#F9F5F1;border-radius:8px;padding:3px">
-        <button onclick="previewScene('family',this)" style="flex:1;padding:6px;border:none;background:#8B6244;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit">家族写真</button>
-        <button onclick="previewScene('753',this)" style="flex:1;padding:6px;border:none;background:transparent;color:#888;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit">七五三</button>
-        <button onclick="previewScene('omi',this)" style="flex:1;padding:6px;border:none;background:transparent;color:#888;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit">お宮参り</button>
-      </div>
-      <div id="preview-plans"></div>
-    </div>
     </div>
   </div>
 
@@ -576,8 +566,10 @@ function getDayStatus(key) {
   if(slots.length===0) return 'none';
   const avail=slots.filter(s=>s==='available').length;
   const booked=slots.filter(s=>s==='booked').length;
-  if(avail>0 && booked===0) return 'available';
-  if(avail>0 && booked>0) return 'partial';
+  const closed=slots.filter(s=>s==='closed').length;
+  if(avail>0 && booked===0 && closed===0) return 'available';
+  if(avail>0) return 'partial';
+  if(closed>0 && avail===0) return 'closed';
   if(booked>0 && avail===0) return 'booked';
   return 'none';
 }
@@ -610,6 +602,7 @@ function buildCal() {
     else if(status==='available'){el.className='cal-cell available';el.onclick=()=>selectDay(key);}
     else if(status==='partial'){el.className='cal-cell partial';el.onclick=()=>selectDay(key);}
     else if(status==='booked'){el.className='cal-cell booked';el.onclick=()=>selectDay(key);}
+    else if(status==='closed'){el.className='cal-cell closed';el.onclick=()=>selectDay(key);}
     else{el.className='cal-cell';el.onclick=()=>selectDay(key);}
     grid.appendChild(el);
   }
@@ -638,7 +631,8 @@ function showTimePanel(key) {
     else if(dayData&&dayData[h]){slotStatus=dayData[h];}
     if(slotStatus==='available') el.classList.add('available');
     else if(slotStatus==='booked') el.classList.add('booked');
-    if(slotStatus!=='booked') {
+    else if(slotStatus==='closed') el.classList.add('closed');
+    if(slotStatus!=='booked' && slotStatus!=='closed') {
       el.onclick=()=>toggleSlot(key,h,el);
     }
     slotsEl.appendChild(el);
