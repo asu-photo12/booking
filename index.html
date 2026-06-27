@@ -340,9 +340,11 @@ textarea{resize:vertical;min-height:80px}
       <div class="confirm-row"><span class="confirm-label">料金</span><span id="conf-price" style="font-weight:500;color:#8B6244">—</span></div>
     </div>
     <div style="margin-bottom:1rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
-        <input type="checkbox" id="agree-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
-        <span>撮影のご案内とキャンセル規約を確認し、同意しました。（<a href="policy.html" target="_blank" style="color:#8B6244;text-decoration:underline">ご案内・規約を確認する</a>）</span>
+      <p style="font-size:12px;color:#888;margin-bottom:8px">まず下のリンクから規約をご確認ください</p>
+      <a href="policy.html" target="_blank" id="policy-link" onclick="markPolicyOpened()" style="display:inline-block;margin-bottom:10px;color:#8B6244;font-size:13px;font-weight:500;text-decoration:underline">撮影のご案内・規約を確認する</a>
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:not-allowed;font-size:13px;color:#3D2B1F;font-weight:400" id="agree-label">
+        <input type="checkbox" id="agree-check" disabled style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:not-allowed;opacity:.4">
+        <span id="agree-text" style="color:#aaa">撮影のご案内とキャンセル規約を確認し、同意しました。<br><span style="font-size:11px">（先に規約をご確認ください）</span></span>
       </label>
     </div>
     <div style="margin-bottom:1.5rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
@@ -748,6 +750,20 @@ restoreFormData();
 const FORM_FIELDS = ['f-name','f-email','f-phone','f-instagram','f-address','f-zip','f-children','f-note'];
 const SELECT_FIELDS = ['f-members','f-sns'];
 
+function markPolicyOpened() {
+  localStorage.setItem('asuphoto_policy_opened', '1');
+  setTimeout(enableAgreeCheck, 500);
+}
+
+function enableAgreeCheck() {
+  const check = document.getElementById('agree-check');
+  const label = document.getElementById('agree-label');
+  const text = document.getElementById('agree-text');
+  if (check) { check.disabled = false; check.style.opacity = '1'; check.style.cursor = 'pointer'; }
+  if (label) label.style.cursor = 'pointer';
+  if (text) text.innerHTML = '撮影のご案内とキャンセル規約を確認し、同意しました。';
+}
+
 function saveFormData() {
   const data = {};
   FORM_FIELDS.forEach(id => {
@@ -784,7 +800,10 @@ function restoreFormData() {
       selectedPlanName = data.selectedPlanName;
       selectedPlanPrice = data.selectedPlanPrice;
     }
-    // policy同意済みならチェックを入れる
+    // 規約を開いたことがある or 同意済みならチェックを有効化
+    if (localStorage.getItem('asuphoto_policy_opened') === '1' || localStorage.getItem('asuphoto_policy_agreed') === '1') {
+      enableAgreeCheck();
+    }
     if (localStorage.getItem('asuphoto_policy_agreed') === '1') {
       const agreeEl = document.getElementById('agree-check');
       if (agreeEl) agreeEl.checked = true;
