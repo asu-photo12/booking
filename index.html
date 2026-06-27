@@ -120,7 +120,7 @@ textarea{resize:vertical;min-height:80px}
           <div class="plan-name">Standard <span style="text-decoration:underline">1番人気</span></div>
           <div class="plan-price">¥20,000</div>
           <div class="plan-desc">ご家族の大事なイベントや思い出をしっかり残したい方にお勧め</div>
-          <div class="plan-features">撮影時間 60分前後<br>データ納品 40cut</div>
+          <div class="plan-features">撮影時間 1時間前後<br>データ納品 40cut</div>
         </label>
         <label class="plan" id="plan-family-premium" onclick="selectPlan('【家族写真】Premiumプラン','26000','family-premium')">
           <input type="radio" name="plan">
@@ -128,7 +128,7 @@ textarea{resize:vertical;min-height:80px}
           <div class="plan-name">Premium</div>
           <div class="plan-price">¥26,000</div>
           <div class="plan-desc">少しの表情の変化も全て残したい方向け。様々なシーンをたくさんお届けします</div>
-          <div class="plan-features">撮影時間 90分前後<br>データ納品 80cut</div>
+          <div class="plan-features">撮影時間 1時間半前後<br>データ納品 80cut</div>
         </label>
       </div>
     </div>
@@ -262,6 +262,15 @@ textarea{resize:vertical;min-height:80px}
           <div class="option-desc">3月・4月の撮影に適用（平日・休日ともに適用）</div>
         </div>
         <div class="option-price">+¥3,000</div>
+      </div>
+      <div class="option-item" id="opt-travel" onclick="toggleOption('travel')">
+        <input type="checkbox" id="chk-travel">
+        <div class="option-check" id="chk-travel-icon"></div>
+        <div class="option-info">
+          <div class="option-name">出張費用</div>
+          <div class="option-desc">埼玉県北部の自宅からの距離に応じて異なります。詳しくはお問合せください。</div>
+        </div>
+        <div class="option-price">別途相談</div>
       </div>
     </div>
     <div id="option-total" style="margin-top:12px;padding:10px 14px;background:#F9F5F1;border-radius:8px;font-size:13px;display:none">
@@ -589,6 +598,7 @@ const OPTIONS = {
   rental:    { label: 'レンタルお洋服', price: 0 },
   headdress: { label: 'ヘッドドレスつけ放題', price: 1500 },
   busy:      { label: '繁忙期（3・4月）', price: 3000 },
+  travel:    { label: '出張費用', price: 0 },
 };
 let selectedOptions = new Set();
 
