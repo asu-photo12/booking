@@ -341,30 +341,18 @@ textarea{resize:vertical;min-height:80px}
     </div>
     <div style="margin-bottom:1rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
       <p style="font-size:12px;color:#888;margin-bottom:8px">まず下のリンクから規約をご確認ください</p>
-      <a href="policy.html" id="policy-link" onclick="goToPolicy()" style="display:inline-block;margin-bottom:10px;color:#8B6244;font-size:13px;font-weight:500;text-decoration:underline">撮影のご案内・規約を確認する</a>
-      <div id="agree-locked" style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#aaa;pointer-events:none;user-select:none">
-        <div style="width:18px;height:18px;border:1.5px solid #ddd;border-radius:3px;flex-shrink:0;margin-top:2px;background:#f5f5f5"></div>
-        <span>撮影のご案内とキャンセル規約を確認し、同意しました。<br><span style="font-size:11px;color:#C4A882">↑ 先に上のリンクから規約をご確認ください</span></span>
+      <a href="policy.html?from=booking" style="display:inline-block;margin-bottom:10px;color:#8B6244;font-size:13px;font-weight:500;text-decoration:underline">撮影のご案内・規約を確認する</a>
+      <div id="agree-box">
+        <div id="agree-locked" style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#bbb;pointer-events:none;user-select:none">
+          <div style="width:18px;height:18px;border:1.5px solid #ddd;border-radius:3px;flex-shrink:0;margin-top:2px;background:#f0f0f0"></div>
+          <span>撮影のご案内とキャンセル規約を確認し、同意しました。<br><span style="font-size:11px;color:#C4A882">（先に上のリンクから規約をご確認ください）</span></span>
+        </div>
+        <label id="agree-unlocked" style="display:none;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
+          <input type="checkbox" id="agree-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
+          <span>撮影のご案内とキャンセル規約を確認し、同意しました。</span>
+        </label>
       </div>
-      <label id="agree-unlocked" style="display:none;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
-        <input type="checkbox" id="agree-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
-        <span>撮影のご案内とキャンセル規約を確認し、同意しました。</span>
-      </label>
     </div>
-    <div style="margin-bottom:1.5rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
-        <input type="checkbox" id="confirm-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
-        <span>こちらの入力内容を確認後、eriより再度連絡させていただきご予約確定となります。</span>
-      </label>
-    </div>
-    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">この内容で予約を申し込む</button>
-    <p style="font-size:11px;color:#888;margin-top:8px;text-align:center">送信後、確認メールをお送りします。</p>
-    <div id="after-submit-msg" style="display:none;margin-top:1.5rem;background:#F5EDE8;border-radius:12px;padding:1.25rem;text-align:center;line-height:1.9">
-      <p style="font-size:16px;font-weight:500;color:#3D2B1F;margin-bottom:8px">ご予約ありがとうございます。</p>
-      <p style="font-size:13px;color:#555;margin-bottom:1rem">この後、予約完了メールをお送りします。</p>
-      <p style="font-size:13px;color:#555;font-weight:500">こちらの入力後、お手数おかけしますが念のため<br>InstagramまたはLINE公式アカウントにて<br>入力完了したことをご連絡ください。</p>
-    </div>
-  </div>
 </div>
 <script>
 const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxV03iKnfqUEmQzqa_xkAhBNNYxsvyT-wtkM_6pG6HDPk6xbq2Uo3f7Np4olgm2QoT1Zw/exec';
@@ -750,15 +738,23 @@ fetchAvailability();
 loadHeaderImage();
 restoreFormData();
 
-// 規約同意済みならチェックを即座に有効化
-if (localStorage.getItem('asuphoto_policy_agreed') === '1') {
-  const locked = document.getElementById('agree-locked');
-  const unlocked = document.getElementById('agree-unlocked');
-  const agreeCheck = document.getElementById('agree-check');
-  if (locked) locked.style.display = 'none';
-  if (unlocked) unlocked.style.display = 'flex';
-  if (agreeCheck) agreeCheck.checked = true;
+// URLパラメータに agreed=1 がある時だけチェックを入れる
+function checkPolicyAgreed() {
+  try {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('agreed') === '1') {
+      var locked = document.getElementById('agree-locked');
+      var unlocked = document.getElementById('agree-unlocked');
+      var check = document.getElementById('agree-check');
+      if (locked) locked.style.display = 'none';
+      if (unlocked) unlocked.style.display = 'flex';
+      if (check) check.checked = true;
+      // URLをきれいにする
+      history.replaceState(null, '', window.location.pathname);
+    }
+  } catch(e) {}
 }
+checkPolicyAgreed();
 
 // ===== 入力内容の自動保存・復元 =====
 const FORM_FIELDS = ['f-name','f-email','f-phone','f-instagram','f-address','f-zip','f-children','f-note'];
@@ -779,12 +775,12 @@ function markPolicyOpened() {
 }
 
 function enableAgreeCheck() {
-  const locked = document.getElementById('agree-locked');
-  const unlocked = document.getElementById('agree-unlocked');
-  const notice = document.getElementById('policy-notice');
+  var locked = document.getElementById('agree-locked');
+  var unlocked = document.getElementById('agree-unlocked');
+  var check = document.getElementById('agree-check');
   if (locked) locked.style.display = 'none';
-  if (unlocked) { unlocked.style.display = 'flex'; }
-  if (notice) notice.style.display = 'none';
+  if (unlocked) unlocked.style.display = 'flex';
+  if (check) check.checked = true;
 }
 
 function saveFormData() {
@@ -823,20 +819,9 @@ function restoreFormData() {
       selectedPlanName = data.selectedPlanName;
       selectedPlanPrice = data.selectedPlanPrice;
     }
-    // 規約を開いたことがある or 同意済みならチェックを有効化
-    if (localStorage.getItem('asuphoto_policy_opened') === '1' || localStorage.getItem('asuphoto_policy_agreed') === '1') {
-      enableAgreeCheck();
-    }
-    // 同意済みならチェックを入れてバリデーションも通す
+    // 規約同意済みならチェックを有効化
     if (localStorage.getItem('asuphoto_policy_agreed') === '1') {
-      setTimeout(function() {
-        const locked = document.getElementById('agree-locked');
-        const unlocked = document.getElementById('agree-unlocked');
-        const agreeEl = document.getElementById('agree-check');
-        if (locked) locked.style.display = 'none';
-        if (unlocked) unlocked.style.display = 'flex';
-        if (agreeEl) agreeEl.checked = true;
-      }, 200);
+      enableAgreeCheck();
     }
     updateConfirm();
   } catch(e) {}
