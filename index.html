@@ -754,6 +754,11 @@ function checkPolicyAgreed() {
     }
   } catch(e) {}
 }
+// DOMが完全に読み込まれた後に実行
+document.addEventListener('DOMContentLoaded', function() {
+  checkPolicyAgreed();
+});
+// 念のためすぐにも実行
 checkPolicyAgreed();
 
 // ===== 入力内容の自動保存・復元 =====
@@ -819,10 +824,7 @@ function restoreFormData() {
       selectedPlanName = data.selectedPlanName;
       selectedPlanPrice = data.selectedPlanPrice;
     }
-    // 規約同意済みならチェックを有効化
-    if (localStorage.getItem('asuphoto_policy_agreed') === '1') {
-      enableAgreeCheck();
-    }
+
     updateConfirm();
   } catch(e) {}
 }
