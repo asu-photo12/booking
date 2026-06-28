@@ -96,6 +96,21 @@ textarea{resize:vertical;min-height:80px}
 </header>
 <div class="container">
   <div id="alert-box" class="alert hidden"></div>
+  <div style="margin-bottom:1.25rem;padding:1rem;background:#fff;border-radius:12px;border:0.5px solid #E8DDD7">
+    <p style="font-size:12px;color:#888;margin-bottom:8px">まず下のリンクから規約をご確認ください</p>
+    <a href="policy.html?from=booking" style="display:inline-block;margin-bottom:10px;color:#8B6244;font-size:13px;font-weight:500;text-decoration:underline">撮影のご案内・規約を確認する</a>
+    <div id="agree-box">
+      <div id="agree-locked" style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#bbb;pointer-events:none;user-select:none">
+        <div style="width:18px;height:18px;border:1.5px solid #ddd;border-radius:3px;flex-shrink:0;margin-top:2px;background:#f0f0f0"></div>
+        <span>撮影のご案内とキャンセル規約を確認し、同意しました。<br><span style="font-size:11px;color:#C4A882">（先に上のリンクから規約をご確認ください）</span></span>
+      </div>
+      <label id="agree-unlocked" style="display:none;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
+        <input type="checkbox" id="agree-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
+        <span>撮影のご案内とキャンセル規約を確認し、同意しました。</span>
+      </label>
+    </div>
+  </div>
+
   <div class="card">
     <h2>撮影シーンとプランを選ぶ</h2>
     <!-- シーンタブ -->
@@ -324,20 +339,6 @@ textarea{resize:vertical;min-height:80px}
   </div>
   <div class="card">
     <h2>予約内容の確認</h2>
-    <div style="margin-bottom:1rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
-      <p style="font-size:12px;color:#888;margin-bottom:8px">まず下のリンクから規約をご確認ください</p>
-      <a href="policy.html?from=booking" style="display:inline-block;margin-bottom:10px;color:#8B6244;font-size:13px;font-weight:500;text-decoration:underline">撮影のご案内・規約を確認する</a>
-      <div id="agree-box">
-        <div id="agree-locked" style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#bbb;pointer-events:none;user-select:none">
-          <div style="width:18px;height:18px;border:1.5px solid #ddd;border-radius:3px;flex-shrink:0;margin-top:2px;background:#f0f0f0"></div>
-          <span>撮影のご案内とキャンセル規約を確認し、同意しました。<br><span style="font-size:11px;color:#C4A882">（先に上のリンクから規約をご確認ください）</span></span>
-        </div>
-        <label id="agree-unlocked" style="display:none;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
-          <input type="checkbox" id="agree-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
-          <span>撮影のご案内とキャンセル規約を確認し、同意しました。</span>
-        </label>
-      </div>
-    </div>
     <div class="confirm-box">
       <div class="confirm-row"><span class="confirm-label">プラン</span><span id="conf-plan">—</span></div>
       <div class="confirm-row"><span class="confirm-label">撮影日</span><span id="conf-date">—</span></div>
