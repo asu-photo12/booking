@@ -38,7 +38,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#F
 .cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;border-radius:8px;cursor:pointer;border:0.5px solid transparent;transition:all .1s;flex-direction:column;gap:1px}
 .cal-cell.empty,.cal-cell.past{cursor:default;color:#ccc}
 .cal-cell.available{background:#EAF3DE;color:#27500A}
-.cal-cell.partial{background:#D4EDFF;color:#0C447C}
+.cal-cell.partial{background:#EAF3DE;color:#27500A}
 .cal-cell.selected{background:#8B6244;color:#fff;font-weight:500}
 .cal-cell .slot-count{font-size:9px;opacity:.8}
 .cal-legend{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
@@ -545,19 +545,19 @@ function buildCalendar(){
     // その日の空き時間を集計
     const daySlots=Object.keys(availability).filter(k=>k.startsWith(key+' ')||k===key);
     const availSlots=daySlots.filter(k=>availability[k]==='available');
+    const bookedSlots=daySlots.filter(k=>availability[k]==='booked');
     const hasAvail=availSlots.length>0||(availability[key]==='available');
-    const hasPartial=availSlots.length>0&&availSlots.length<12;
 
     if(availSlots.length>0){
       const sc=document.createElement('span');sc.className='slot-count';
-      sc.textContent=availSlots.length>=4?'○':'△';
+      sc.textContent=bookedSlots.length>0?'△':'○';
       el.appendChild(sc);
     }
 
     if(isPast){el.className='cal-cell past';}
     else if(key===selectedDate){el.className='cal-cell selected';el.onclick=()=>clickDay(key);}
     else if(availability[key]==='available'){el.className='cal-cell available';el.onclick=()=>clickDay(key);}
-    else if(hasAvail){el.className='cal-cell partial';el.onclick=()=>clickDay(key);}
+    else if(hasAvail){el.className='cal-cell available';el.onclick=()=>clickDay(key);}
     
     else{el.className='cal-cell past';}
     grid.appendChild(el);
