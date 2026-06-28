@@ -107,21 +107,20 @@ body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Helvetica Neue',Ar
 
 <script>
 function updateAgree() {
-  const checked = document.getElementById('policy-agree').checked;
-  const msg = document.getElementById('agree-msg');
-  const done = document.getElementById('agree-done');
+  var checked = document.getElementById('policy-agree').checked;
+  var msg = document.getElementById('agree-msg');
+  var done = document.getElementById('agree-done');
   if (msg) msg.style.display = checked ? 'none' : 'block';
   if (done) done.style.display = checked ? 'block' : 'none';
   if (checked) {
-    localStorage.setItem('asuphoto_policy_agreed', '1');
-    localStorage.setItem('asuphoto_policy_opened', '1');
-    var count = 1;
-    var timer = setInterval(function() {
-      if (done) done.textContent = '予約フォームに戻ります…（' + count + '）';
-      count++;
-      if (count > 2) {
-        clearInterval(timer);
-        location.href = 'https://asu-photo12.github.io/booking/';
+    var n = 2;
+    if (done) done.textContent = '予約フォームに戻ります（' + n + '）';
+    var t = setInterval(function() {
+      n--;
+      if (done) done.textContent = '予約フォームに戻ります（' + n + '）';
+      if (n <= 0) {
+        clearInterval(t);
+        window.location.href = 'https://asu-photo12.github.io/booking/index.html?agreed=1';
       }
     }, 1000);
   }
