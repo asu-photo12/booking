@@ -238,7 +238,8 @@ function buildCalendar() {
     } else if(availability[key]==='available'||availSlots.length>0){
       el.className='cal-cell available';
       const mark=document.createElement('span');mark.className='mark';const totalSlots = Object.keys(availability).filter(k=>k.startsWith(key+' ')).length;
-      mark.textContent = (totalSlots > 0 && availSlots.length < totalSlots) ? '△' : '○';el.appendChild(mark);
+      const bookedSlots = Object.keys(availability).filter(k=>k.startsWith(key+' ')&&availability[k]==='booked').length;
+      mark.textContent = bookedSlots > 0 ? '△' : '○';el.appendChild(mark);
       el.onclick=()=>{selectedDate=key;buildCalendar();showTimeSlots && showTimeSlots(key);};
     } else {
       el.className='cal-cell past';
