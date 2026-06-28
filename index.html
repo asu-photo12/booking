@@ -324,6 +324,20 @@ textarea{resize:vertical;min-height:80px}
   </div>
   <div class="card">
     <h2>予約内容の確認</h2>
+    <div style="margin-bottom:1rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
+      <p style="font-size:12px;color:#888;margin-bottom:8px">まず下のリンクから規約をご確認ください</p>
+      <a href="policy.html?from=booking" style="display:inline-block;margin-bottom:10px;color:#8B6244;font-size:13px;font-weight:500;text-decoration:underline">撮影のご案内・規約を確認する</a>
+      <div id="agree-box">
+        <div id="agree-locked" style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#bbb;pointer-events:none;user-select:none">
+          <div style="width:18px;height:18px;border:1.5px solid #ddd;border-radius:3px;flex-shrink:0;margin-top:2px;background:#f0f0f0"></div>
+          <span>撮影のご案内とキャンセル規約を確認し、同意しました。<br><span style="font-size:11px;color:#C4A882">（先に上のリンクから規約をご確認ください）</span></span>
+        </div>
+        <label id="agree-unlocked" style="display:none;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
+          <input type="checkbox" id="agree-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
+          <span>撮影のご案内とキャンセル規約を確認し、同意しました。</span>
+        </label>
+      </div>
+    </div>
     <div class="confirm-box">
       <div class="confirm-row"><span class="confirm-label">プラン</span><span id="conf-plan">—</span></div>
       <div class="confirm-row"><span class="confirm-label">撮影日</span><span id="conf-date">—</span></div>
@@ -339,20 +353,15 @@ textarea{resize:vertical;min-height:80px}
       <div class="confirm-row"><span class="confirm-label">オプション</span><span id="conf-options">なし</span></div>
       <div class="confirm-row"><span class="confirm-label">料金</span><span id="conf-price" style="font-weight:500;color:#8B6244">—</span></div>
     </div>
-    <div style="margin-bottom:1rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
-      <p style="font-size:12px;color:#888;margin-bottom:8px">まず下のリンクから規約をご確認ください</p>
-      <a href="policy.html?from=booking" style="display:inline-block;margin-bottom:10px;color:#8B6244;font-size:13px;font-weight:500;text-decoration:underline">撮影のご案内・規約を確認する</a>
-      <div id="agree-box">
-        <div id="agree-locked" style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#bbb;pointer-events:none;user-select:none">
-          <div style="width:18px;height:18px;border:1.5px solid #ddd;border-radius:3px;flex-shrink:0;margin-top:2px;background:#f0f0f0"></div>
-          <span>撮影のご案内とキャンセル規約を確認し、同意しました。<br><span style="font-size:11px;color:#C4A882">（先に上のリンクから規約をご確認ください）</span></span>
-        </div>
-        <label id="agree-unlocked" style="display:none;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
-          <input type="checkbox" id="agree-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
-          <span>撮影のご案内とキャンセル規約を確認し、同意しました。</span>
-        </label>
-      </div>
+    <div style="margin-bottom:1.5rem;padding:1rem;background:#F9F5F1;border-radius:10px;border:0.5px solid #E8DDD7">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#3D2B1F;font-weight:400">
+        <input type="checkbox" id="confirm-check" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:#8B6244;cursor:pointer">
+        <span>こちらの入力内容を確認後、eriより再度連絡させていただきご予約確定となります。</span>
+      </label>
     </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">この内容で予約を申し込む</button>
+    <p style="font-size:11px;color:#888;margin-top:8px;text-align:center">送信後、確認メールをお送りします。</p>
+  </div>
 </div>
 <script>
 const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxV03iKnfqUEmQzqa_xkAhBNNYxsvyT-wtkM_6pG6HDPk6xbq2Uo3f7Np4olgm2QoT1Zw/exec';
