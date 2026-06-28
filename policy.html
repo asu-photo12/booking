@@ -100,7 +100,7 @@ body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Helvetica Neue',Ar
     </label>
     <div id="agree-msg" style="margin-top:1rem;font-size:13px;color:#aaa">チェックを入れると確認完了です</div>
     <div id="agree-done" style="display:none;margin-top:1rem;background:#EAF3DE;border-radius:10px;padding:12px;font-size:14px;color:#27500A;font-weight:500">
-      ご確認ありがとうございます。予約フォームに自動で戻ります…
+      ご確認ありがとうございます。予約フォームに戻ります…
     </div>
   </div>
 </div>
@@ -115,8 +115,14 @@ function updateAgree() {
   if (checked) {
     localStorage.setItem('asuphoto_policy_agreed', '1');
     localStorage.setItem('asuphoto_policy_opened', '1');
-    setTimeout(function() {
-      location.href = 'https://asu-photo12.github.io/booking/index.html';
+    var count = 1;
+    var timer = setInterval(function() {
+      if (done) done.textContent = '予約フォームに戻ります…（' + count + '）';
+      count++;
+      if (count > 2) {
+        clearInterval(timer);
+        location.href = 'https://asu-photo12.github.io/booking/';
+      }
     }, 1000);
   }
 }
