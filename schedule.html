@@ -23,6 +23,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#F
 .plan-card{border:0.5px solid #E8DDD7;border-radius:10px;padding:12px;background:#FAF6F3;cursor:pointer;transition:border-color .15s}
 .plan-card:hover{border-color:#8B6244}
 .plan-card.selected{border:2px solid #8B6244;background:#F5EDE8}
+.plan-card.selected{border:2px solid #8B6244;background:#F5EDE8}
 .scene-badge{display:inline-block;background:#F5EDE8;color:#8B6244;font-size:11px;padding:2px 8px;border-radius:20px;margin-bottom:6px;font-weight:500}
 .plan-name{font-size:13px;font-weight:500;margin-bottom:4px}
 .plan-price{font-size:17px;font-weight:500;color:#8B6244;margin-bottom:4px}
@@ -77,6 +78,7 @@ textarea{resize:vertical;min-height:100px}
       <button class="plan-tab active" onclick="switchPlan('family',this)">家族写真</button>
       <button class="plan-tab" onclick="switchPlan('753',this)">七五三</button>
       <button class="plan-tab" onclick="switchPlan('omi',this)">お宮参り</button>
+      <button class="plan-tab" onclick="switchPlan('baby',this)">Baby Plan</button>
     </div>
     <div class="plan-content active" id="pc-family">
       <div class="plans">
@@ -97,6 +99,32 @@ textarea{resize:vertical;min-height:100px}
         <div class="plan-card" id="pc-omi-mini" onclick="selectPlanCard('omi-mini','お宮参り Mini Plan')"><div class="scene-badge">お宮参り</div><div class="plan-name">Mini Plan</div><div class="plan-price">¥20,000</div><div class="plan-desc">定番ショットのみを短時間で残したい方</div><div class="plan-features">撮影時間 40分前後<br>データ納品 30cut</div></div>
         <div class="plan-card" id="pc-omi-standard" onclick="selectPlanCard('omi-standard','お宮参り Standard Plan')"><div class="scene-badge">お宮参り</div><div class="plan-name">Standard Plan</div><div class="plan-price">¥22,000</div><div class="plan-desc">ハレの日の記録をしっかり残したい方</div><div class="plan-features">撮影時間 1時間前後<br>データ納品 50cut</div></div>
         <div class="plan-card" id="pc-omi-premium" onclick="selectPlanCard('omi-premium','お宮参り Premium Plan')"><div class="scene-badge">お宮参り</div><div class="plan-name">Premium Plan</div><div class="plan-price">¥30,000</div><div class="plan-desc">主役のお子様が複数いらっしゃる方</div><div class="plan-features">撮影時間 1時間30分前後<br>データ納品 100cut</div></div>
+      </div>
+    </div>
+    <div class="plan-content" id="pc-baby">
+      <div style="background:#FAF6F3;border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:13px;color:#555;line-height:1.8">
+        <strong>2歳まで</strong>のお子様がいるご家庭でお家で遊んだり、抱っこしたり、絵本を読んだりそんな何気ない未来に残したい写真を撮るお手伝いをさせてください。
+      </div>
+      <div style="background:#FFF8F5;border-left:3px solid #C4A882;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:1rem;font-size:12px;color:#666;line-height:1.8">
+        ※ 撮影場所はお家のみ・お家周辺となります<br>
+        ※ ご兄弟の追加料金はなし<br>
+        ※ ナチュラルニューボーン、マタニティも含みます
+      </div>
+      <div class="plans" style="grid-template-columns:repeat(2,1fr)">
+        <div class="plan-card" id="pc-baby-standard" onclick="selectPlanCard('baby-standard','Baby Plan Standard Plan')" style="cursor:pointer">
+          <div class="scene-badge">Baby Plan</div>
+          <div class="plan-name">Standard Plan</div>
+          <div class="plan-price">¥18,000</div>
+          <div class="plan-desc">遊び、抱っこなど今残したい瞬間をしっかり</div>
+          <div class="plan-features">撮影時間 1時間前後<br>データ納品 40cut</div>
+        </div>
+        <div class="plan-card" id="pc-baby-premium" onclick="selectPlanCard('baby-premium','Baby Plan Premium Plan')" style="cursor:pointer">
+          <div class="scene-badge">Baby Plan</div>
+          <div class="plan-name">Premium Plan</div>
+          <div class="plan-price">¥20,000</div>
+          <div class="plan-desc">たっぷり時間をかけてすべての瞬間を残したい方</div>
+          <div class="plan-features">撮影時間 1時間半前後<br>データ納品 80cut</div>
+        </div>
       </div>
     </div>
   </div>
