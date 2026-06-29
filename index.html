@@ -118,6 +118,7 @@ textarea{resize:vertical;min-height:80px}
       <button class="scene-tab active" onclick="switchScene('family',this)">家族写真</button>
       <button class="scene-tab" onclick="switchScene('753',this)">七五三</button>
       <button class="scene-tab" onclick="switchScene('omiyamairi',this)">お宮参り</button>
+      <button class="scene-tab" onclick="switchScene('baby',this)">Baby Plan</button>
     </div>
 
     <!-- 家族写真 -->
@@ -209,9 +210,37 @@ textarea{resize:vertical;min-height:80px}
         </label>
       </div>
     </div>
+
+    <!-- Baby Plan -->
+    <div class="scene-content" id="scene-baby">
+      <div style="background:#FAF6F3;border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:13px;color:#555;line-height:1.8">
+        <strong>2歳まで</strong>のお子様がいるご家庭でお家で遊んだり、抱っこしたり、絵本を読んだりそんな何気ない未来に残したい写真を撮るお手伝いをさせてください。
+      </div>
+      <div style="background:#FFF8F5;border-left:3px solid #C4A882;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:1rem;font-size:12px;color:#666;line-height:1.8">
+        ※ 撮影場所はお家のみ・お家周辺となります<br>
+        ※ ご兄弟の追加料金はなし<br>
+        ※ ナチュラルニューボーン、マタニティも含みます
+      </div>
+      <div class="plans" style="grid-template-columns:repeat(2,1fr)">
+        <label class="plan" id="plan-baby-standard" onclick="selectPlan('【Baby Plan】Standard Plan','18000','baby-standard')">
+          <input type="radio" name="plan">
+          <div class="scene-badge">Baby Plan</div>
+          <div class="plan-name">Standard Plan <span style="text-decoration:underline">1番人気</span></div>
+          <div class="plan-price">¥18,000</div>
+          <div class="plan-desc">遊び、抱っこなど今残したい瞬間をしっかり</div>
+          <div class="plan-features">撮影時間 1時間前後<br>データ納品 40cut</div>
+        </label>
+        <label class="plan" id="plan-baby-premium" onclick="selectPlan('【Baby Plan】Premium Plan','20000','baby-premium')">
+          <input type="radio" name="plan">
+          <div class="scene-badge">Baby Plan</div>
+          <div class="plan-name">Premium Plan</div>
+          <div class="plan-price">¥20,000</div>
+          <div class="plan-desc">たっぷり時間をかけてすべての瞬間を残したい方</div>
+          <div class="plan-features">撮影時間 1時間半前後<br>データ納品 80cut</div>
+        </label>
+      </div>
+    </div>
   </div>
-  <div class="card">
-    <h2>撮影日・時間を選ぶ</h2>
     <div id="cal-loading" class="loading-cal">空き日程を読み込み中...</div>
     <div id="cal-body" style="display:none">
       <div class="cal-nav">
@@ -397,7 +426,7 @@ function getPlans() {
       const p = JSON.parse(saved);
       // 管理画面の保存形式をマージ
       const merged = JSON.parse(JSON.stringify(DEFAULT_PLANS));
-      ['family','753','omi'].forEach(s => {
+      ['family','753','omi','baby'].forEach(s => {
         if (p[s]) {
           ['p1','p2','p3'].forEach(k => {
             if (p[s][k]) Object.assign(merged[s][k], p[s][k]);
