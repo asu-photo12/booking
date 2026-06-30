@@ -37,6 +37,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#F
 .cal-day{text-align:center;font-size:11px;color:#888;padding:4px 0;font-weight:500}
 .cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;border-radius:8px;cursor:pointer;border:0.5px solid transparent;transition:all .1s;flex-direction:column;gap:1px}
 .cal-cell.empty,.cal-cell.past{cursor:default;color:#ccc}
+.cal-cell.available.partial-booked{background:#FCEEDC;color:#A35E0A}
 .cal-cell.available{background:#EAF3DE;color:#27500A}
 .cal-cell.partial{background:#EAF3DE;color:#27500A}
 .cal-cell.selected{background:#8B6244;color:#fff;font-weight:500}
@@ -579,14 +580,14 @@ function buildCalendar(){
 
     if(availSlots.length>0){
       const sc=document.createElement('span');sc.className='slot-count';
-      sc.textContent=bookedSlots.length>0?'△':'○';
+      sc.textContent=bookedSlots.length>0?'▲':'○';
       el.appendChild(sc);
     }
 
     if(isPast){el.className='cal-cell past';}
     else if(key===selectedDate){el.className='cal-cell selected';el.onclick=()=>clickDay(key);}
-    else if(availability[key]==='available'){el.className='cal-cell available';el.onclick=()=>clickDay(key);}
-    else if(hasAvail){el.className='cal-cell available';el.onclick=()=>clickDay(key);}
+    else if(availability[key]==='available'){el.className='cal-cell available'+(bookedSlots.length>0?' partial-booked':'');el.onclick=()=>clickDay(key);}
+    else if(hasAvail){el.className='cal-cell available'+(bookedSlots.length>0?' partial-booked':'');el.onclick=()=>clickDay(key);}
     
     else{el.className='cal-cell past';}
     grid.appendChild(el);
@@ -621,7 +622,7 @@ function showTimeSlots(key) {
 
   if(!hasTimeSlots && availability[key]==='available'){
     // 全時間空きとして表示
-    const hours=['9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+    const hours=['9:00','10:00','11:00','12:00','13:00','14:00','15:00'];
     slotsEl.innerHTML='';
     hours.forEach(h=>{
       const el=document.createElement('div');
