@@ -152,7 +152,7 @@ function showTimeSlots(key) {
   const daySlots = Object.keys(availability)
     .filter(k => k.startsWith(key + ' ') && availability[k] === 'available')
     .map(k => k.replace(key + ' ', ''))
-    .sort();
+    .sort((a, b) => parseInt(a.split(':')[0]) - parseInt(b.split(':')[0]));
 
   title.textContent = key + ' の空き時間';
   panel.classList.add('show');
