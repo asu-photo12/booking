@@ -602,6 +602,14 @@ function clickDay(key) {
   updateConfirm();
 }
 
+function sortTimeStrings(times) {
+  return times.sort((a, b) => {
+    const numA = parseInt(a.split(':')[0]);
+    const numB = parseInt(b.split(':')[0]);
+    return numA - numB;
+  });
+}
+
 function showTimeSlots(key) {
   const wrap=document.getElementById('time-select-wrap');
   const slotsEl=document.getElementById('time-slots-customer');
@@ -633,7 +641,7 @@ function showTimeSlots(key) {
     });
   } else {
     slotsEl.innerHTML='';
-    Object.keys(daySlots).sort().forEach(h=>{
+    sortTimeStrings(Object.keys(daySlots)).forEach(h=>{
       if(daySlots[h]==='available'){
         const el=document.createElement('div');
         el.className='time-slot available';
