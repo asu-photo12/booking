@@ -21,6 +21,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#F
 .cal-day{text-align:center;font-size:11px;color:#888;padding:4px 0;font-weight:500}
 .cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;border-radius:8px;border:0.5px solid transparent}
 .cal-cell.empty,.cal-cell.past{color:#ccc}
+.cal-cell.available.partial-booked{background:#FCEEDC;color:#A35E0A}
 .cal-cell.available{background:#EAF3DE;color:#27500A}
 .cal-cell .mark{font-size:10px;font-weight:500}
 .legend{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
@@ -119,10 +120,11 @@ function buildCalendar() {
       const mark=document.createElement('span');mark.className='mark';mark.textContent='✓';el.appendChild(mark);
       el.onclick=()=>{selectedDate='';buildCalendar();showTimeSlots && showTimeSlots('');};
     } else if(availability[key]==='available'||availSlots.length>0){
-      el.className='cal-cell available';
-      const mark=document.createElement('span');mark.className='mark';const totalSlots = Object.keys(availability).filter(k=>k.startsWith(key+' ')).length;
+      const totalSlots = Object.keys(availability).filter(k=>k.startsWith(key+' ')).length;
       const bookedSlots = Object.keys(availability).filter(k=>k.startsWith(key+' ')&&availability[k]==='booked').length;
-      mark.textContent = bookedSlots > 0 ? '△' : '○';el.appendChild(mark);
+      el.className='cal-cell available'+(bookedSlots>0?' partial-booked':'');
+      const mark=document.createElement('span');mark.className='mark';
+      mark.textContent = bookedSlots > 0 ? '▲' : '○';el.appendChild(mark);
       el.onclick=()=>{selectedDate=key;buildCalendar();showTimeSlots && showTimeSlots(key);};
     } else {
       el.className='cal-cell past';
