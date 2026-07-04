@@ -242,6 +242,8 @@ textarea{resize:vertical;min-height:80px}
       </div>
     </div>
   </div>
+  <div class="card">
+    <h2>撮影日・時間を選ぶ</h2>
     <div id="cal-loading" class="loading-cal">空き日程を読み込み中...</div>
     <div id="cal-body" style="display:none">
       <div class="cal-nav">
@@ -251,7 +253,8 @@ textarea{resize:vertical;min-height:80px}
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="cal-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#97C459"></div>空き</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#97C459"></div>空きあり</div>
+        <div class="legend-item" style="color:#A35E0A;font-weight:500">▲ 一部空きあり</div>
         <div class="legend-item"><div class="legend-dot" style="background:#ddd"></div>予約不可日</div>
       </div>
       <!-- 時間選択 -->
@@ -261,6 +264,7 @@ textarea{resize:vertical;min-height:80px}
       </div>
       <p id="selected-datetime-display" style="margin-top:10px;font-size:13px;color:#8B6244;font-weight:500;min-height:20px"></p>
     </div>
+  </div>
   </div>
 
   <!-- プランプレビュー（選択後に表示） -->
@@ -603,11 +607,7 @@ function clickDay(key) {
 }
 
 function sortTimeStrings(times) {
-  return times.sort((a, b) => {
-    const numA = parseInt(a.split(':')[0]);
-    const numB = parseInt(b.split(':')[0]);
-    return numA - numB;
-  });
+  return times.sort((a, b) => { const ta = a.split(':'); const tb = b.split(':'); return parseInt(ta[0])*60+parseInt(ta[1]||0) - (parseInt(tb[0])*60+parseInt(tb[1]||0)); });
 }
 
 function showTimeSlots(key) {
