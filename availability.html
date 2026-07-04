@@ -56,7 +56,7 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#F
       <div class="cal-grid" id="cal-grid"></div>
       <div class="legend">
         <div class="legend-item"><div class="legend-dot" style="background:#97C459"></div>空きあり</div>
-      </div>空き</div>
+        <div class="legend-item" style="color:#A35E0A;font-weight:500">▲ 一部空きあり</div>
         <div class="legend-item"><div class="legend-dot" style="background:#ddd"></div>予約不可日</div>
       </div>
       <div class="time-panel" id="time-panel">
@@ -152,7 +152,7 @@ function showTimeSlots(key) {
   const daySlots = Object.keys(availability)
     .filter(k => k.startsWith(key + ' ') && availability[k] === 'available')
     .map(k => k.replace(key + ' ', ''))
-    .sort((a, b) => parseInt(a.split(':')[0]) - parseInt(b.split(':')[0]));
+    .sort((a, b) => { const ta = a.split(':'); const tb = b.split(':'); return parseInt(ta[0])*60+parseInt(ta[1]||0) - (parseInt(tb[0])*60+parseInt(tb[1]||0)); });
 
   title.textContent = key + ' の空き時間';
   panel.classList.add('show');
