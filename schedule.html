@@ -188,6 +188,10 @@ textarea{resize:vertical;min-height:100px}
       <input type="date" id="c-date" onchange="onDateInputChange()">
     </div>
     <div class="form-group">
+      <label>撮影希望時間</label>
+      <input type="time" id="c-time" onchange="onTimeInputChange()">
+    </div>
+    <div class="form-group">
       <label>希望撮影場所</label>
       <input type="text" id="c-location" placeholder="神社、自宅、公園など">
     </div>
@@ -301,6 +305,22 @@ function onDateInputChange(){
   if(selectedDate){ calYear=Number(selectedDate.slice(0,4)); calMonth=Number(selectedDate.slice(5,7))-1; }
   buildCalendar();
   updateSelectedDisplay();
+}
+
+function onTimeInputChange(){
+  const timeInput=document.getElementById('c-time');
+  const t=timeInput.value||'';
+  const msg=document.getElementById('c-message');
+  if(msg){
+    const lines=msg.value.split('\n');
+    const filtered=lines.filter(l=>l.indexOf('希望時間:')!==0);
+    if(t){
+      let insertAt=0;
+      if(filtered[0] && filtered[0].indexOf('希望日:')===0) insertAt=1;
+      filtered.splice(insertAt,0,'希望時間: '+t);
+    }
+    msg.value=filtered.join('\n');
+  }
 }
 
 function changeMonth(dir){
