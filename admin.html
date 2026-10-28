@@ -193,25 +193,25 @@ body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f
         <div class="plan-card">
           <h3>ライトプラン</h3>
           <div class="grid2">
-            <div class="fg"><label>料金（円）</label><input type="number" id="family-p1-price" value="17000"></div>
+            <div class="fg"><label>料金（円）</label><input type="number" id="family-p1-price" value="20000"></div>
             <div class="fg"><label>撮影時間</label><input type="text" id="family-p1-time" value="40分前後"></div>
-            <div class="fg"><label>データ納品枚数</label><input type="text" id="family-p1-photos" value="15cut"></div>
+            <div class="fg"><label>データ納品枚数</label><input type="text" id="family-p1-photos" value="25cut"></div>
             <div class="fg full" style="grid-column:1/-1"><label>説明文</label><input type="text" id="family-p1-desc" value="撮影を試してみたい方や短時間で撮りたい方"></div>
           </div>
         </div>
         <div class="plan-card">
           <h3>スタンダードプラン ★人気</h3>
           <div class="grid2">
-            <div class="fg"><label>料金（円）</label><input type="number" id="family-p2-price" value="20000"></div>
+            <div class="fg"><label>料金（円）</label><input type="number" id="family-p2-price" value="22000"></div>
             <div class="fg"><label>撮影時間</label><input type="text" id="family-p2-time" value="60分前後"></div>
-            <div class="fg"><label>データ納品枚数</label><input type="text" id="family-p2-photos" value="40cut"></div>
+            <div class="fg"><label>データ納品枚数</label><input type="text" id="family-p2-photos" value="50cut"></div>
             <div class="fg" style="grid-column:1/-1"><label>説明文</label><input type="text" id="family-p2-desc" value="ご家族の大事なイベントや思い出をしっかり残したい方にお勧め"></div>
           </div>
         </div>
         <div class="plan-card">
           <h3>プレミアムプラン</h3>
           <div class="grid2">
-            <div class="fg"><label>料金（円）</label><input type="number" id="family-p3-price" value="26000"></div>
+            <div class="fg"><label>料金（円）</label><input type="number" id="family-p3-price" value="30000"></div>
             <div class="fg"><label>撮影時間</label><input type="text" id="family-p3-time" value="90分前後"></div>
             <div class="fg"><label>データ納品枚数</label><input type="text" id="family-p3-photos" value="80cut"></div>
             <div class="fg" style="grid-column:1/-1"><label>説明文</label><input type="text" id="family-p3-desc" value="少しの表情の変化も全て残したい方向け"></div>
@@ -1052,7 +1052,7 @@ function getPlans() {
     if (saved) {
       const p = JSON.parse(saved);
       const defaults = {
-        family: { p1:{price:'17000',time:'40分前後',photos:'15cut',desc:'撮影を試してみたい方や短時間で撮りたい方'}, p2:{price:'20000',time:'60分前後',photos:'40cut',desc:'ご家族の大事なイベントや思い出をしっかり残したい方にお勧め'}, p3:{price:'26000',time:'90分前後',photos:'80cut',desc:'少しの表情の変化も全て残したい方向け'} },
+        family: { p1:{price:'20000',time:'40分前後',photos:'25cut',desc:'撮影を試してみたい方や短時間で撮りたい方'}, p2:{price:'22000',time:'60分前後',photos:'50cut',desc:'ご家族の大事なイベントや思い出をしっかり残したい方にお勧め'}, p3:{price:'30000',time:'90分前後',photos:'80cut',desc:'少しの表情の変化も全て残したい方向け'} },
         '753':  { p1:{price:'22000',time:'40分前後',photos:'30cut',desc:'参拝のみのお参り撮影'}, p2:{price:'26000',time:'60分前後',photos:'70cut',desc:'お参りから食事会まで'}, p3:{price:'32000',time:'90分前後',photos:'100cut',desc:'一日まるごと記念撮影'} },
         omi:    { p1:{price:'20000',time:'40分前後',photos:'30cut',desc:'シンプルな記念撮影'}, p2:{price:'22000',time:'60分前後',photos:'50cut',desc:'神社〜自宅まで密着'}, p3:{price:'30000',time:'90分前後',photos:'100cut',desc:'一日まるごと密着記録'} },
       };
@@ -1065,7 +1065,7 @@ function getPlans() {
     }
   } catch(e) {}
   return {
-    family: { p1:{price:'17000',time:'40分前後',photos:'15cut',desc:'撮影を試してみたい方や短時間で撮りたい方'}, p2:{price:'20000',time:'60分前後',photos:'40cut',desc:'ご家族の大事なイベントや思い出をしっかり残したい方にお勧め'}, p3:{price:'26000',time:'90分前後',photos:'80cut',desc:'少しの表情の変化も全て残したい方向け'} },
+    family: { p1:{price:'20000',time:'40分前後',photos:'25cut',desc:'撮影を試してみたい方や短時間で撮りたい方'}, p2:{price:'22000',time:'60分前後',photos:'50cut',desc:'ご家族の大事なイベントや思い出をしっかり残したい方にお勧め'}, p3:{price:'30000',time:'90分前後',photos:'80cut',desc:'少しの表情の変化も全て残したい方向け'} },
     '753':  { p1:{price:'22000',time:'40分前後',photos:'30cut',desc:'参拝のみのお参り撮影'}, p2:{price:'26000',time:'60分前後',photos:'70cut',desc:'お参りから食事会まで'}, p3:{price:'32000',time:'90分前後',photos:'100cut',desc:'一日まるごと記念撮影'} },
     omi:    { p1:{price:'20000',time:'40分前後',photos:'30cut',desc:'シンプルな記念撮影'}, p2:{price:'22000',time:'60分前後',photos:'50cut',desc:'神社〜自宅まで密着'}, p3:{price:'30000',time:'90分前後',photos:'100cut',desc:'一日まるごと密着記録'} },
   };
