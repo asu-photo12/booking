@@ -184,6 +184,10 @@ textarea{resize:vertical;min-height:100px}
       <input type="email" id="c-email" placeholder="hanako@example.com">
     </div>
     <div class="form-group">
+      <label>撮影希望日<span class="required">*</span></label>
+      <input type="date" id="c-date" onchange="onDateInputChange()">
+    </div>
+    <div class="form-group">
       <label>希望撮影場所</label>
       <input type="text" id="c-location" placeholder="神社、自宅、公園など">
     </div>
@@ -281,12 +285,22 @@ function buildCalendar() {
 function updateSelectedDisplay(){
   const el=document.getElementById('selected-date');
   if(el) el.textContent=selectedDate?'選択中: '+selectedDate:'';
+  const dateInput=document.getElementById('c-date');
+  if(dateInput && dateInput.value!==selectedDate) dateInput.value=selectedDate;
   const msg=document.getElementById('c-message');
   if(msg){
     const lines=msg.value.split('\n');
     const rest=lines[0].indexOf('希望日:')===0?lines.slice(1).join('\n'):msg.value;
     msg.value=selectedDate?('希望日: '+selectedDate+'\n'+rest):rest;
   }
+}
+
+function onDateInputChange(){
+  const dateInput=document.getElementById('c-date');
+  selectedDate=dateInput.value||'';
+  if(selectedDate){ calYear=Number(selectedDate.slice(0,4)); calMonth=Number(selectedDate.slice(5,7))-1; }
+  buildCalendar();
+  updateSelectedDisplay();
 }
 
 function changeMonth(dir){
@@ -333,6 +347,10 @@ function closeModal(e){
 }
 
 fetchAvailability();
+{
+  const dateInput=document.getElementById('c-date');
+  if(dateInput){ const t=new Date(); dateInput.min=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+}
 
 let currentPlanId = '';
 function selectPlanCard(pid, name) {
