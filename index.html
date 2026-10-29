@@ -313,6 +313,15 @@ textarea{resize:vertical;min-height:80px}
         </div>
         <div class="option-price">+¥3,000</div>
       </div>
+      <div class="option-item" id="opt-repeater" onclick="toggleOption('repeater')">
+        <input type="checkbox" id="chk-repeater">
+        <div class="option-check" id="chk-repeater-icon"></div>
+        <div class="option-info">
+          <div class="option-name">リピーター割引</div>
+          <div class="option-desc">一度でも個別撮影や撮影会に参加したことがある方</div>
+        </div>
+        <div class="option-price">-¥1,000</div>
+      </div>
       <div class="option-item" id="opt-travel" onclick="toggleOption('travel')">
         <input type="checkbox" id="chk-travel">
         <div class="option-check" id="chk-travel-icon"></div>
@@ -670,6 +679,7 @@ const OPTIONS = {
   rental:    { label: 'レンタルお洋服', price: 0 },
   headdress: { label: 'ヘッドドレスつけ放題', price: 1500 },
   busy:      { label: '繁忙期シーズン加算', price: 3000 },
+  repeater:  { label: 'リピーター割引', price: -1000 },
   travel:    { label: '出張費用', price: 0 },
 };
 let selectedOptions = new Set();
@@ -691,7 +701,7 @@ function toggleOption(key) {
   const totalEl = document.getElementById('option-total');
   const totalTextEl = document.getElementById('option-total-text');
   if (selectedOptions.size > 0) {
-    const labels = [...selectedOptions].map(k => OPTIONS[k].price > 0 ? OPTIONS[k].label + '(+¥' + OPTIONS[k].price.toLocaleString() + ')' : OPTIONS[k].label + '(別途相談)');
+    const labels = [...selectedOptions].map(k => OPTIONS[k].price > 0 ? OPTIONS[k].label + '(+¥' + OPTIONS[k].price.toLocaleString() + ')' : OPTIONS[k].price < 0 ? OPTIONS[k].label + '(-¥' + Math.abs(OPTIONS[k].price).toLocaleString() + ')' : OPTIONS[k].label + '(別途相談)');
     totalTextEl.textContent = labels.join('、');
     totalEl.style.display = 'block';
   } else {
@@ -737,7 +747,7 @@ function updateConfirm(){
   // オプション料金計算
   const optionPrice = [...selectedOptions].reduce((sum, k) => sum + OPTIONS[k].price, 0);
   const totalPrice = Number(selectedPlanPrice) + optionPrice;
-  const optionLabels = [...selectedOptions].map(k => OPTIONS[k].price > 0 ? OPTIONS[k].label + '(+¥' + OPTIONS[k].price.toLocaleString() + ')' : OPTIONS[k].label + '(別途相談)');
+  const optionLabels = [...selectedOptions].map(k => OPTIONS[k].price > 0 ? OPTIONS[k].label + '(+¥' + OPTIONS[k].price.toLocaleString() + ')' : OPTIONS[k].price < 0 ? OPTIONS[k].label + '(-¥' + Math.abs(OPTIONS[k].price).toLocaleString() + ')' : OPTIONS[k].label + '(別途相談)');
   document.getElementById('conf-options').textContent = optionLabels.length > 0 ? optionLabels.join('、') : 'なし';
   document.getElementById('conf-price').textContent = '¥' + totalPrice.toLocaleString() + (selectedOptions.has('rental') ? '＋レンタル別途' : '');
 }
